@@ -7,3 +7,8 @@ O trabalho está organizado da seguinte maneira:
   -A pasta contasego possuí os arquivos relacionados ao front-end da aplicação.
   -A pasta contasegoBack possuí os arquivos relacionados ao back-end da aplicação.
   -A pasta Documentos possui documentos, diagramas e informações relacionadas a aplicação (como levantamento de requisitos, diagrama de casos de uso, etc).
+
+Participantes do grupo e matrícula:
+  -Arthur Henrique Paulini Grasnievicz - 2311100002
+  -Gabriel Gois - 2311100030
+  -Paula Frison Padilha - 2311100034
