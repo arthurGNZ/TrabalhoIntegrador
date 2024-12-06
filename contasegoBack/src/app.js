@@ -3,7 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 const { testConnection } = require('./config/database');
 
-const authRoutes = require('./routes/authRoutes');
+const authRoutes = require('./routes/auth.routes.js');
 const personRoutes = require('./routes/personRoutes');
 const rolesRoutes = require('./routes/rolesRoutes');
 const businessRoutes = require('./routes/businessRoutes');
@@ -14,7 +14,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Test Database Connection
 testConnection();
 
 app.use('/auth', authRoutes);
