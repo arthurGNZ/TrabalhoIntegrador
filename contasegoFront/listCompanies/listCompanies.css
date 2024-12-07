@@ -1,0 +1,206 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(to bottom, #43a1ff, #000531);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    color: #fff;
+}
+
+.header {
+    width: 100%;
+    height: 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.logo-styleDoLink {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.logo {
+    height: 60px;
+    margin-right: 10px;
+}
+
+.title {
+    display: flex;
+    flex-direction: column;
+}
+
+.title h1, .title h2 {
+    margin: 0;
+}
+
+.title h1 {
+    font-size: 24px;
+}
+
+.title h2 {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.menu-icon {
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.list-companies h3 {
+    text-align: center;
+    margin-top: 150px;
+    margin-bottom: 20px;
+    font-size: 30px;
+    padding: 15px;
+    background: linear-gradient(to left, #1e90ff, #1c7ed6);
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table th, .table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.table th {
+    background-color: #1e90ff;
+    color: #fff;
+}
+
+.table td {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.table tr:hover {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.btn-action {
+    background-color: transparent;
+    color: #fff;
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+.btn-action:hover {
+    opacity: 0.8;
+}
+.btn-action.edit {
+    background-color: #5ee97e;
+    font-size: 18px;
+}
+
+.btn-action.edit:hover {
+    background-color: #2b9141;
+}
+
+.btn-action.delete {
+    background-color: #dc3545;
+}
+
+.btn-action.delete:hover {
+    background-color: #74111b;
+}
+
+
+
+.sidebar {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    top: 0;
+    right: 0;
+    background-color: rgba(37,37,37);
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+    z-index: 1001;
+}
+
+.sidebar.open {
+    width: 250px;
+}
+
+.sidebar a {
+    padding: 10px 15px;
+    text-decoration: none;
+    font-size: 25px;
+    color: white;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidebar a:hover {
+    background-color: #575757;
+}
+
+.sidebar .closebtn {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 36px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .container {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 20px;
+    }
+
+    .logo {
+        height: 50px;
+    }
+
+    .title h1 {
+        font-size: 20px;
+    }
+
+    .title h2 {
+        font-size: 14px;
+    }
+
+    .list-companies h3 {
+        font-size: 18px;
+    }
+
+    .table th, .table td {
+        padding: 8px;
+    }
+
+    .btn-action {
+        font-size: 14px;
+    }
+}

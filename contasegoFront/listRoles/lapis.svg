@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-5 -5 40 45">
+  <!-- Corpo do lápis -->
+  <path d="M0,25 L15,5 L25,15 L10,35 L0,35 Z" fill="white" stroke="white" stroke-width="2"/>
+  <!-- Ponta do lápis -->
+  <path d="M17,3 L27,13 L30,10 L20,0 Z" fill="white" stroke="white" stroke-width="2"/>
+</svg>

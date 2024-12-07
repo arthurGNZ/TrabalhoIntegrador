@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listar Empresas - Contaseg</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="listCompanies.css">
+</head>
+<body>
+    <div class="header">
+        <a href="#" class="logo-styleDoLink">
+            <img src="logo-simbolo.png" alt="Contaseg Logo" class="logo">
+            <div class="title">
+                <h1>CONTASEG</h1>
+                <h2>CONTABILIDADE E SEGUROS</h2>
+            </div>
+        </a>
+        <div class="menu-icon" onclick="openNav()">&#9776;</div>
+    </div>
+
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="#">Usuários</a>
+        <a href="#">Empresas</a>
+        <a href="#">Papéis</a>
+    </div>
+
+    <div class="container">
+        <div class="list-companies">
+            <h3>Empresas Registradas</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>CNPJ</th>
+                        <th>Razão Social</th>
+                        <th>E-mail</th>
+                        <th>Data de Criação</th>
+                        <th>Telefone</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Exemplos de empresas -->
+                    <tr>
+                        <td>00.000.000/0001-00</td>
+                        <td>Empresa Exemplo</td>
+                        <td>empresa@exemplo.com</td>
+                        <td>01/01/2020</td>
+                        <td>(11) 12345-6789</td>
+                        <td>
+                            <button class="btn-action edit">
+                                <img src="lapis.svg" alt="Editar" width="20" height="20">
+                            </button> 
+                            <button class="btn-action delete">
+                                <img src="lixeira.svg" alt="Editar" width="20" height="20">
+                            </button>                         </td>
+                    </tr>
+                    <tr>
+                        <td>00.000.000/0001-00</td>
+                        <td>Empresa Exemplo</td>
+                        <td>empresa@exemplo.com</td>
+                        <td>01/01/2020</td>
+                        <td>(11) 12345-6789</td>
+                        <td>
+                            <button class="btn-action edit">
+                                <img src="lapis.svg" alt="Editar" width="20" height="20">
+                            </button> 
+                            <button class="btn-action delete">
+                                <img src="lixeira.svg" alt="Editar" width="20" height="20">
+                            </button>                         </td>
+                    </tr>
+                    <tr>
+                        <td>00.000.000/0001-00</td>
+                        <td>Empresa Exemplo</td>
+                        <td>empresa@exemplo.com</td>
+                        <td>01/01/2020</td>
+                        <td>(11) 12345-6789</td>
+                        <td>
+                            <button class="btn-action edit">
+                                <img src="lapis.svg" alt="Editar" width="20" height="20">
+                            </button>  
+                            <button class="btn-action delete">
+                                <img src="lixeira.svg" alt="Editar" width="20" height="20">
+                            </button> 
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="listCompanies.js"></script>
+</body>
+</html>

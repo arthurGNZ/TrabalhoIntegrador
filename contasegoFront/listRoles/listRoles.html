@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listar Papéis - Contaseg</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="listRoles.css">
+</head>
+<body>
+    <div class="header">
+        <a href="#" class="logo-styleDoLink">
+            <img src="logo-simbolo.png" alt="Contaseg Logo" class="logo">
+            <div class="title">
+                <h1>CONTASEG</h1>
+                <h2>CONTABILIDADE E SEGUROS</h2>
+            </div>
+        </a>
+        <div class="menu-icon" onclick="openNav()">&#9776;</div>
+    </div>
+
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="#">Usuários</a>
+        <a href="#">Empresas</a>
+        <a href="#">Papéis</a>
+    </div>
+
+    <div class="container">
+        <div class="list-roles">
+            <h3>Papéis Registrados</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Nome do Papel</th>
+                        <th>Descrição</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Exemplos de papéis -->
+                    <tr>
+                        <td class="accordion-arrow" onclick="togglePermissions('admin')">&#9654;</td>
+                        <td>Administrador</td>
+                        <td>Responsável por todas as permissões.</td>
+                        <td>
+                            <button class="btn-action edit">
+                                <img src="lapis.svg" alt="Editar" width="20" height="20">
+                            </button> 
+                            <button class="btn-action delete">
+                                <img src="lixeira.svg" alt="Excluir" width="20" height="20">
+                            </button>  
+                        </td>
+                    </tr>
+                    <tr class="permissions-row" id="admin">
+                        <td colspan="4">Permissões: Gerenciar usuários, visualizar relatórios, configurar sistema.</td>
+                    </tr>
+                    <tr>
+                        <td class="accordion-arrow" onclick="togglePermissions('manager')">&#9654;</td>
+                        <td>Gerente</td>
+                        <td>Gerencia operações e recursos.</td>
+                        <td>
+                            <button class="btn-action edit">
+                                <img src="lapis.svg" alt="Editar" width="20" height="20">
+                            </button> 
+                            <button class="btn-action delete">
+                                <img src="lixeira.svg" alt="Excluir" width="20" height="20">
+                            </button>  
+                        </td>
+                    </tr>
+                    <tr class="permissions-row" id="manager">
+                        <td colspan="4">Permissões: Gerenciar operações, aprovar despesas, acessar relatórios financeiros.</td>
+                    </tr>
+                    <tr>
+                        <td class="accordion-arrow" onclick="togglePermissions('user')">&#9654;</td>
+                        <td>Usuário</td>
+                        <td>Acesso limitado a funcionalidades básicas.</td>
+                        <td>
+                            <button class="btn-action edit">
+                                <img src="lapis.svg" alt="Editar" width="20" height="20">
+                            </button>  
+                            <button class="btn-action delete">
+                                <img src="lixeira.svg" alt="Excluir" width="20" height="20">
+                            </button> 
+                        </td>
+                    </tr>
+                    <tr class="permissions-row" id="user">
+                        <td colspan="4">Permissões: Visualizar dados próprios, realizar tarefas básicas.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="listRoles.js"></script>
+</body>
+</html>

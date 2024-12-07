@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-5 -5 40 45">
+  <!-- Corpo da lixeira -->
+  <path d="M0,5 H30 M5,5 V35 H25 V5 M10,5 V2 H20 V5" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Linhas internas -->
+  <path d="M12,12 V28 M18,12 V28" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
+</svg>
