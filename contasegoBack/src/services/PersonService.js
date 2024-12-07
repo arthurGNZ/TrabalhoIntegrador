@@ -69,7 +69,8 @@ class PersonService {
       await this.emailService.sendWelcomeEmail(email, nome, senha);
 
       await transaction.commit();
-      return novaPessoa;
+
+      return this.formatPersonResponse(await this.getById(cpf));
 
     } catch (error) {
       await transaction.rollback();
@@ -141,7 +142,8 @@ class PersonService {
       }
 
       await transaction.commit();
-      return pessoa;
+
+      return this.formatPersonResponse(await this.getById(cpf));
 
     } catch (error) {
       await transaction.rollback();
@@ -211,28 +213,7 @@ class PersonService {
         }
       });
 
-      const pessoas = rows.map(pessoa => ({
-        cpf: pessoa.cpf,
-        nome: pessoa.nome,
-        email: pessoa.email,
-        data_nascimento: pessoa.data_nascimento,
-        telefone_principal: pessoa.telefone_principal,
-        telefone_secundario: pessoa.telefone_secundario,
-        data_ultimo_login: pessoa.data_ultimo_login,
-        ultima_empresa_acessada: pessoa.ultima_empresa_acessada,
-        alterar_senha: pessoa.alterar_senha,
-        contratos: (pessoa.Contratos || []).map(contrato => ({
-          empresa: {
-            cnpj: contrato.Empresa.cnpj,
-            razao_social: contrato.Empresa.razao_social
-          },
-          cargo: {
-            sigla: contrato.Cargo.sigla_cargo,
-            nome: contrato.Cargo.nome
-          },
-          data_contrato: contrato.data_contrato
-        }))
-      }));
+      const pessoas = rows.map(pessoa => this.formatPersonResponse(pessoa));
 
       return {
         pessoas,
@@ -270,31 +251,34 @@ class PersonService {
         throw new Error('Pessoa não encontrada');
       }
 
-      return {
-        cpf: pessoa.cpf,
-        nome: pessoa.nome,
-        email: pessoa.email,
-        data_nascimento: pessoa.data_nascimento,
-        telefone_principal: pessoa.telefone_principal,
-        telefone_secundario: pessoa.telefone_secundario,
-        data_ultimo_login: pessoa.data_ultimo_login,
-        ultima_empresa_acessada: pessoa.ultima_empresa_acessada,
-        alterar_senha: pessoa.alterar_senha,
-        contratos: (pessoa.Contratos || []).map(contrato => ({
-          empresa: {
-            cnpj: contrato.Empresa.cnpj,
-            razao_social: contrato.Empresa.razao_social
-          },
-          cargo: {
-            sigla: contrato.Cargo.sigla_cargo,
-            nome: contrato.Cargo.nome
-          },
-          data_contrato: contrato.data_contrato
-        }))
-      };
+      return this.formatPersonResponse(pessoa);
     } catch (error) {
       throw new Error(`Erro ao buscar pessoa: ${error.message}`);
     }
+  }
+
+  formatPersonResponse(pessoa) {
+    return {
+      cpf: pessoa.cpf,
+      nome: pessoa.nome,
+      email: pessoa.email,
+      data_nascimento: pessoa.data_nascimento,
+      telefone_principal: pessoa.telefone_principal,
+      telefone_secundario: pessoa.telefone_secundario,
+      data_ultimo_login: pessoa.data_ultimo_login,
+      ultima_empresa_acessada: pessoa.ultima_empresa_acessada,
+      alterar_senha: pessoa.alterar_senha,
+      contratos: (pessoa.Contratos || []).map(contrato => ({
+        empresa: {
+          cnpj: contrato.Empresa.cnpj,
+          razao_social: contrato.Empresa.razao_social
+        },
+        cargo: {
+          sigla: contrato.Cargo.sigla_cargo,
+          nome: contrato.Cargo.nome
+        }
+      }))
+    };
   }
 
   generateRandomPassword() {
