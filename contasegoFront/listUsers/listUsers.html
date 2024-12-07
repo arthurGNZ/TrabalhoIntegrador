@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listar Usuários - Contaseg</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="listUsers.css">
+</head>
+<body>
+    <div class="header">
+        <a href="#" class="logo-styleDoLink">
+            <img src="logo-simbolo.png" alt="Contaseg Logo" class="logo">
+            <div class="title">
+                <h1>CONTASEG</h1>
+                <h2>CONTABILIDADE E SEGUROS</h2>
+            </div>
+        </a>
+        <div class="menu-icon" onclick="openNav()">&#9776;</div>
+    </div>
+
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="#">Usuários</a>
+        <a href="#">Empresas</a>
+        <a href="#">Papéis</a>
+    </div>
+
+    <div class="container">
+        <div class="list-users">
+            <h3>Usuários Registrados</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Nome do Usuário</th>
+                        <th>E-mail</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Exemplo de usuário -->
+                    <tr>
+                        <td class="accordion-arrow" onclick="togglePermissions('user1')">&#9654;</td>
+                        <td>João Silva</td>
+                        <td>joao@exemplo.com</td>
+                        <td>
+                            <button class="btn-action edit">
+                                <img src="lapis.svg" alt="Editar" width="20" height="20">
+                            </button> 
+                            <button class="btn-action delete">
+                                <img src="lixeira.svg" alt="Excluir" width="20" height="20">
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="permissions-row" id="user1">
+                        <td colspan="4">
+                            <table class="table-mini">
+                                <thead>
+                                    <tr>
+                                        <th>Papel</th>
+                                        <th>Empresa</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Gerente</td>
+                                        <td>GREMIO</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="accordion-arrow" onclick="togglePermissions('user2')">&#9654;</td>
+                        <td>Maria Oliveira</td>
+                        <td>maria@exemplo.com</td>
+                        <td>
+                            <button class="btn-action edit">
+                                <img src="lapis.svg" alt="Editar" width="20" height="20">
+                            </button> 
+                            <button class="btn-action delete">
+                                <img src="lixeira.svg" alt="Excluir" width="20" height="20">
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="permissions-row" id="user2">
+                        <td colspan="4">
+                            <table class="table-mini">
+                                <thead>
+                                    <tr>
+                                        <th>Papel</th>
+                                        <th>Empresa</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Administrador</td>
+                                        <td>Naoseioqnaoseioqla</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Usuario</td>
+                                        <td>Craque</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="listUsers.js"></script>
+</body>
+</html>

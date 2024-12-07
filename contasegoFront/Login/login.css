@@ -90,6 +90,22 @@ button:hover {
     background-color: #1c7ed6;
 }
 
+.forgot-password {
+    margin-top: 0;
+    text-align: right;
+
+}
+
+.forgot-password a {
+    color: #b9d7ff;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.forgot-password a:hover {
+    text-decoration: underline;
+}
+
 /* Responsividade */
 @media (max-width: 480px) {
     .container {

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Empresa - Contaseg</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="createCompany.css">
+</head>
+<body>
+    <div class="header">
+        <a href="#" class="logo-styleDolink">
+            <img src="logo-simbolo.png" alt="Contaseg Logo" class="logo">
+            <div class="title">
+                <h1>CONTASEG</h1>
+                <h2>CONTABILIDADE E SEGUROS</h2>
+            </div>
+        </a>
+        <div class="menu-icon" onclick="openNav()">&#9776;</div>
+    </div>
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="#">Usuários</a>
+        <a href="#">Empresas</a>
+        <a href="#">Papéis</a>
+    </div>
+    </div>
+
+    <div class="container">
+        <div class="create-company">
+            <h3>Empresa</h3>
+            <form action="#" method="POST">
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="cnpj">CNPJ</label>
+                        <input type="text" id="cnpj" name="cnpj" required maxlength="18" oninput="formatarCNPJ(this)">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="razao_social">Razão Social</label>
+                        <input type="text" id="razao_social" name="razao_social" required>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="data_criacao">Data de Criação da Empresa</label>
+                        <input type="date" id="data_criacao" name="data_criacao" required>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="data_inicio_contrato">Data de Início de Contrato com a Contaseg</label>
+                        <input type="date" id="data_inicio_contrato" name="data_inicio_contrato" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="telefone1">Telefone 1</label>
+                        <input type="tel" id="telefone1" name="telefone1" required maxlength="15" oninput="limitarTelefone(this)">
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="telefone2">Telefone 2 (opcional)</label>
+                        <input type="tel" id="telefone2" name="telefone2" maxlength="15" oninput="limitarTelefone(this)">
+                    </div>
+                </div>
+
+                <button type="submit">Criar Empresa</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="createCompany.js"></script>
+</body>
+</html>

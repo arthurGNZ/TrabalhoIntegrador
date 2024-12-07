@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Papel - Contaseg</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="createRole.css">
+</head>
+<body>
+    <div class="header">
+        <a href="#" class="logo-styleDolink">
+            <img src="logo-simbolo.png" alt="Contaseg Logo" class="logo">
+            <div class="title">
+                <h1>CONTASEG</h1>
+                <h2>CONTABILIDADE E SEGUROS</h2>
+            </div>
+        </a>
+        <div class="menu-icon" onclick="openNav()">&#9776;</div>
+    </div>
+
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="#">Usuários</a>
+        <a href="#">Empresas</a>
+        <a href="#">Papéis</a>
+    </div>
+
+    <div class="container">
+        <div class="create-role">
+            <h3>Papel</h3>
+            <form action="#" method="POST">
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="sigla_cargo">Sigla do Cargo</label>
+                        <input type="text" id="sigla_cargo" name="sigla_cargo" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="nome_cargo">Nome do Cargo</label>
+                        <input type="text" id="nome_cargo" name="nome_cargo" required>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="sigla_permissao">Sigla da Permissão</label>
+                        <input type="text" id="sigla_permissao" name="sigla_permissao" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="nome_permissao">Nome da Permissão</label>
+                        <input type="text" id="nome_permissao" name="nome_permissao" required>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="descricao_permissao">Descrição da Permissão</label>
+                        <textarea id="descricao_permissao" name="descricao_permissao" required></textarea>
+                    </div>
+                </div>
+
+                <button type="submit">Criar Papel</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="createRole.js"></script>
+</body>
+</html>
