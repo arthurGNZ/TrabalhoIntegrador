@@ -6,7 +6,7 @@ const { testConnection } = require('./config/database');
 const authRoutes = require('./routes/auth.routes.js');
 const personRoutes = require('./routes/person.routes.js');
 const rolesRoutes = require('./routes/rolesRoutes');
-const businessRoutes = require('./routes/businessRoutes');
+const businessRoutes = require('./routes/business.routes.js');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 
 const app = express();
