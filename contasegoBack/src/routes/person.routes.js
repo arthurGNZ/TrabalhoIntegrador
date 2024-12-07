@@ -2,6 +2,19 @@ const router = require('express').Router();
 const PersonController = require('../controllers/PersonController');
 const authMiddleware = require('../middlewares/AuthMiddleware');
 const permissionsGuard = require('../guards/permissionsGuard');
+router.get(
+  '/:cpf',
+  authMiddleware,
+  permissionsGuard('ADM'),
+  PersonController.getById
+);
+
+router.get(
+  '/',
+  authMiddleware,
+  permissionsGuard('ADM'),
+  PersonController.list
+);
 
 router.post(
   '/', 
@@ -23,5 +36,6 @@ router.delete(
   permissionsGuard('ADM'),
   PersonController.delete
 );
+
 
 module.exports = router;

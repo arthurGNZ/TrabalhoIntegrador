@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const bcrypt = require('bcrypt');
 const { sequelize } = require('../config/database');
 const { Pessoa, Empresa, Cargo, Contrato } = require('../models');
@@ -85,7 +86,12 @@ class PersonService {
     }
 
     if (email !== pessoa.email) {
-      const emailExiste = await Pessoa.findOne({ where: { email } });
+      const emailExiste = await Pessoa.findOne({ 
+        where: { 
+          email,
+          cpf: { [Op.ne]: cpf }
+        } 
+      });
       if (emailExiste) {
         throw new Error('Email já cadastrado no sistema');
       }
@@ -143,17 +149,6 @@ class PersonService {
     }
   }
 
-  generateRandomPassword() {
-    const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%';
-    let senha = '';
-    for (let i = 0; i < 10; i++) {
-      senha += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
-    }
-    return senha;
-  }
-
-
-
   async delete(cpf) {
     const transaction = await sequelize.transaction();
 
@@ -180,6 +175,136 @@ class PersonService {
     }
   }
 
+  async list({ page, limit, search, sortField, sortOrder }) {
+    const offset = (page - 1) * limit;
+    
+    const whereCondition = search ? {
+      [Op.or]: [
+        { nome: { [Op.iLike]: `%${search}%` } },
+        { email: { [Op.iLike]: `%${search}%` } }
+      ]
+    } : {};
+
+    try {
+      const { count, rows } = await Pessoa.findAndCountAll({
+        where: whereCondition,
+        offset,
+        limit,
+        distinct: true,
+        include: [{
+          model: Contrato,
+          required: false,
+          include: [
+            {
+              model: Empresa,
+              attributes: ['cnpj', 'razao_social']
+            },
+            {
+              model: Cargo,
+              attributes: ['sigla_cargo', 'nome']
+            }
+          ]
+        }],
+        order: [[sortField, sortOrder.toUpperCase()]],
+        attributes: {
+          exclude: ['senha']
+        }
+      });
+
+      const pessoas = rows.map(pessoa => ({
+        cpf: pessoa.cpf,
+        nome: pessoa.nome,
+        email: pessoa.email,
+        data_nascimento: pessoa.data_nascimento,
+        telefone_principal: pessoa.telefone_principal,
+        telefone_secundario: pessoa.telefone_secundario,
+        data_ultimo_login: pessoa.data_ultimo_login,
+        ultima_empresa_acessada: pessoa.ultima_empresa_acessada,
+        alterar_senha: pessoa.alterar_senha,
+        contratos: (pessoa.Contratos || []).map(contrato => ({
+          empresa: {
+            cnpj: contrato.Empresa.cnpj,
+            razao_social: contrato.Empresa.razao_social
+          },
+          cargo: {
+            sigla: contrato.Cargo.sigla_cargo,
+            nome: contrato.Cargo.nome
+          },
+          data_contrato: contrato.data_contrato
+        }))
+      }));
+
+      return {
+        pessoas,
+        total: count
+      };
+    } catch (error) {
+      throw new Error(`Erro ao listar pessoas: ${error.message}`);
+    }
+  }
+
+  async getById(cpf) {
+    try {
+      const pessoa = await Pessoa.findOne({
+        where: { cpf },
+        include: [{
+          model: Contrato,
+          required: false,
+          include: [
+            {
+              model: Empresa,
+              attributes: ['cnpj', 'razao_social']
+            },
+            {
+              model: Cargo,
+              attributes: ['sigla_cargo', 'nome']
+            }
+          ]
+        }],
+        attributes: {
+          exclude: ['senha']
+        }
+      });
+
+      if (!pessoa) {
+        throw new Error('Pessoa não encontrada');
+      }
+
+      return {
+        cpf: pessoa.cpf,
+        nome: pessoa.nome,
+        email: pessoa.email,
+        data_nascimento: pessoa.data_nascimento,
+        telefone_principal: pessoa.telefone_principal,
+        telefone_secundario: pessoa.telefone_secundario,
+        data_ultimo_login: pessoa.data_ultimo_login,
+        ultima_empresa_acessada: pessoa.ultima_empresa_acessada,
+        alterar_senha: pessoa.alterar_senha,
+        contratos: (pessoa.Contratos || []).map(contrato => ({
+          empresa: {
+            cnpj: contrato.Empresa.cnpj,
+            razao_social: contrato.Empresa.razao_social
+          },
+          cargo: {
+            sigla: contrato.Cargo.sigla_cargo,
+            nome: contrato.Cargo.nome
+          },
+          data_contrato: contrato.data_contrato
+        }))
+      };
+    } catch (error) {
+      throw new Error(`Erro ao buscar pessoa: ${error.message}`);
+    }
+  }
+
+  generateRandomPassword() {
+    const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%';
+    let senha = '';
+    for (let i = 0; i < 10; i++) {
+      senha += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+    }
+    return senha;
+  }
 }
 
 module.exports = new PersonService();

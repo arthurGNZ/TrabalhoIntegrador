@@ -58,12 +58,9 @@ class PersonController {
       });
 
       return res.status(201).json({
-        message: 'Pessoa criada com sucesso',
-        data: {
-          cpf: person.cpf,
-          nome: person.nome,
-          email: person.email
-        }
+        cpf: person.cpf,
+        nome: person.nome,
+        email: person.email
       });
     } catch (error) {
       console.error('Erro ao criar pessoa:', error);
@@ -123,12 +120,9 @@ class PersonController {
       });
 
       return res.json({
-        message: 'Pessoa atualizada com sucesso',
-        data: {
-          cpf: updatedPerson.cpf,
-          nome: updatedPerson.nome,
-          email: updatedPerson.email
-        }
+        cpf: updatedPerson.cpf,
+        nome: updatedPerson.nome,
+        email: updatedPerson.email
       });
     } catch (error) {
       console.error('Erro ao atualizar pessoa:', error);
@@ -137,6 +131,7 @@ class PersonController {
       });
     }
   }
+
   async delete(req, res) {
     try {
       const { cpf } = req.params;
@@ -148,7 +143,6 @@ class PersonController {
       }
 
       await personService.delete(cpf);
-
       return res.status(204).send();
     } catch (error) {
       console.error('Erro ao deletar pessoa:', error);
@@ -157,6 +151,89 @@ class PersonController {
       });
     }
   }
+
+  async list(req, res) {
+    try {
+      const { 
+        page = 1, 
+        limit = 10, 
+        search = '',
+        sortField = 'nome',
+        sortOrder = 'asc'
+      } = req.query;
+      
+      const options = {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        search: search.trim(),
+        sortField,
+        sortOrder: sortOrder.toLowerCase()
+      };
+
+      if (options.page < 1 || options.limit < 1 || options.limit > 100) {
+        return res.status(400).json({
+          error: 'Parâmetros de paginação inválidos. Page deve ser >= 1 e limit entre 1 e 100'
+        });
+      }
+
+      if (!['asc', 'desc'].includes(options.sortOrder)) {
+        return res.status(400).json({
+          error: 'Ordenação deve ser "asc" ou "desc"'
+        });
+      }
+
+      if (!['nome', 'email', 'cpf'].includes(options.sortField)) {
+        return res.status(400).json({
+          error: 'Campo de ordenação inválido. Deve ser "nome", "email" ou "cpf"'
+        });
+      }
+
+      const result = await personService.list(options);
+
+      return res.json({
+        data: result.pessoas,
+        pagination: {
+          total: result.total,
+          totalPages: Math.ceil(result.total / options.limit),
+          currentPage: options.page,
+          limit: options.limit
+        }
+      });
+    } catch (error) {
+      console.error('Erro ao listar pessoas:', error);
+      return res.status(error.status || 500).json({ 
+        error: error.message || 'Erro interno do servidor' 
+      });
+    }
+  }
+
+  async getById(req, res) {
+    try {
+      const { cpf } = req.params;
+  
+      if (!cpf || !/^\d{11}$/.test(cpf)) {
+        return res.status(400).json({ 
+          error: 'CPF inválido'
+        });
+      }
+  
+      const person = await personService.getById(cpf);
+      return res.json({ data: person });
+  
+    } catch (error) {
+      console.error('Erro ao buscar pessoa:', error);
+      
+      if (error.message === 'Pessoa não encontrada') {
+        return res.status(404).json({ error: error.message });
+      }
+      
+      return res.status(500).json({ 
+        error: 'Erro interno do servidor' 
+      });
+    }
+  }
+
+  
 }
 
 module.exports = new PersonController();
