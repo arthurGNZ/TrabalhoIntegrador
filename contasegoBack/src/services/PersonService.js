@@ -1,7 +1,7 @@
 const { Op } = require('sequelize');
 const bcrypt = require('bcrypt');
 const { sequelize } = require('../config/database');
-const { Pessoa, Empresa, Cargo, Contrato } = require('../models');
+const { Pessoa, Empresa, Cargo, Contrato, CargoPermissao, Permissao } = require('../models');
 const EmailService = require('./emailService');
 
 class PersonService {
@@ -158,6 +158,55 @@ class PersonService {
       const pessoa = await Pessoa.findByPk(cpf);
       if (!pessoa) {
         throw new Error('Pessoa não encontrada');
+      }
+
+      const admContratos = await Contrato.findAll({
+        where: { cpf_pessoa: cpf },
+        include: [{
+          model: Cargo,
+          required: true,
+          include: [{
+            model: CargoPermissao,
+            required: true,
+            include: [{
+              model: Permissao,
+              required: true,
+              where: {
+                sigla_permissao: 'ADM'
+              }
+            }]
+          }]
+        }]
+      });
+
+      if (admContratos.length > 0) {
+        const empresasAdm = admContratos.map(contrato => contrato.cnpj_empresa);
+
+        const outrosAdmins = await Contrato.count({
+          where: {
+            cnpj_empresa: { [Op.in]: empresasAdm },
+            cpf_pessoa: { [Op.ne]: cpf }
+          },
+          include: [{
+            model: Cargo,
+            required: true,
+            include: [{
+              model: CargoPermissao,
+              required: true,
+              include: [{
+                model: Permissao,
+                required: true,
+                where: {
+                  sigla_permissao: 'ADM'
+                }
+              }]
+            }]
+          }]
+        });
+
+        if (outrosAdmins === 0) {
+          throw new Error('Não é possível excluir o último usuário com permissão ADM');
+        }
       }
 
       await Contrato.destroy({
