@@ -73,6 +73,28 @@ class AuthService {
       }]
     });
 
+    const isAdminAnywhere = await Contrato.findOne({
+      where: { 
+        cpf_pessoa: pessoa.cpf,
+        sigla_cargo: 'ADM'
+      }
+    });
+
+    let todasPermissoes = permissoes.map(p => ({
+      sigla: p.Permissao.sigla_permissao,
+      nome: p.Permissao.nome
+    }));
+
+    if (isAdminAnywhere) {
+      const admJaExiste = todasPermissoes.some(p => p.sigla === 'ADM');
+      if (!admJaExiste) {
+        todasPermissoes.push({
+          sigla: 'ADM',
+          nome: 'Administrador'
+        });
+      }
+    }
+
     await Pessoa.update({
       data_ultimo_login: new Date(),
       ultima_empresa_acessada: targetCnpj
@@ -90,10 +112,7 @@ class AuthService {
         email: contrato.Empresa.email
       },
       cargo: contrato.sigla_cargo,
-      permissoes: permissoes.map(p => ({
-        sigla: p.Permissao.sigla_permissao,
-        nome: p.Permissao.nome
-      }))
+      permissoes: todasPermissoes
     }, process.env.JWT_SECRET, { expiresIn: '30m' });
 
     return { token };
@@ -153,6 +172,79 @@ class AuthService {
     } catch (error) {
       throw new Error('Token inválido');
     }
+  }
+
+  async changeCompany(cpf, cnpjEmpresa) {
+    const contrato = await Contrato.findOne({
+      where: { 
+        cpf_pessoa: cpf,
+        cnpj_empresa: cnpjEmpresa
+      },
+      include: [{
+        model: Empresa,
+        attributes: ['razao_social', 'email']
+      }]
+    });
+
+    if (!contrato) {
+      throw new Error('Sem acesso a esta empresa');
+    }
+
+    const permissoes = await CargoPermissao.findAll({
+      where: { sigla_cargo: contrato.sigla_cargo },
+      include: [{
+        model: Permissao,
+        attributes: ['sigla_permissao', 'nome']
+      }]
+    });
+
+    const isAdminAnywhere = await Contrato.findOne({
+      where: { 
+        cpf_pessoa: cpf,
+        sigla_cargo: 'ADM'
+      }
+    });
+
+    let todasPermissoes = permissoes.map(p => ({
+      sigla: p.Permissao.sigla_permissao,
+      nome: p.Permissao.nome
+    }));
+
+    if (isAdminAnywhere) {
+      const admJaExiste = todasPermissoes.some(p => p.sigla === 'ADM');
+      if (!admJaExiste) {
+        todasPermissoes.push({
+          sigla: 'ADM',
+          nome: 'Administrador'
+        });
+      }
+    }
+
+    await Pessoa.update({
+      ultima_empresa_acessada: cnpjEmpresa
+    }, {
+      where: { cpf }
+    });
+
+    const pessoa = await Pessoa.findOne({
+      where: { cpf },
+      attributes: ['cpf', 'nome', 'email']
+    });
+
+    const token = jwt.sign({
+      cpf: pessoa.cpf,
+      nome: pessoa.nome,
+      email: pessoa.email,
+      empresa: {
+        cnpj: contrato.cnpj_empresa,
+        razao_social: contrato.Empresa.razao_social,
+        email: contrato.Empresa.email
+      },
+      cargo: contrato.sigla_cargo,
+      permissoes: todasPermissoes
+    }, process.env.JWT_SECRET, { expiresIn: '30m' });
+
+    return { token };
   }
 
   generateRandomPassword() {

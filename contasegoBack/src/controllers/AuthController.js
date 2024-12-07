@@ -31,6 +31,22 @@ class AuthController {
       return res.status(error.status || 500).json({ error: error.message });
     }
   }
+
+  async changeCompany(req, res) {
+    try {
+      const { cnpj_empresa } = req.body;
+      const { cpf } = req.user;
+      
+      if (!cnpj_empresa) {
+        return res.status(400).json({ error: 'CNPJ da empresa é obrigatório' });
+      }
+
+      const result = await authService.changeCompany(cpf, cnpj_empresa);
+      return res.json(result);
+    } catch (error) {
+      return res.status(error.status || 500).json({ error: error.message });
+    }
+  }
 }
 
 module.exports = new AuthController();

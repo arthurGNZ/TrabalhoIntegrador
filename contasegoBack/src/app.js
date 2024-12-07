@@ -4,7 +4,7 @@ require('dotenv').config();
 const { testConnection } = require('./config/database');
 
 const authRoutes = require('./routes/auth.routes.js');
-const personRoutes = require('./routes/personRoutes');
+const personRoutes = require('./routes/person.routes.js');
 const rolesRoutes = require('./routes/rolesRoutes');
 const businessRoutes = require('./routes/businessRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
