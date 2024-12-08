@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Inicial - ContaseGo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="homePageUser.css">
+</head>
+<body>
+    <div class="header">
+        <a href="#" class="logo-styleDolink">
+            <img src="logo-simbolo.png" alt="Contaseg Logo" class="logo">
+            <div class="title">
+                <h1>CONTASEG</h1>
+                <h2>Bem-Vindo, NomeDoUsuario</h2>
+            </div>
+        </a>
+        <div class="menu-icon" onclick="openNav()">Minhas Empresas</div>
+    </div>
+
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="#">Empresa 1</a>
+        <a href="#">Empresa 2</a>
+    </div>
+
+    <div class="container">
+        <div class="info-banner">
+            <p>Você está visualizando as informações de NomeDaEmpresa 1:</p>
+        </div>
+        <div class="selection-box">
+            <h3>Deseja ver as estatísticas de:</h3>
+            <div class="buttons">
+                <a href="departamento-fiscal.html" class="button">Departamento Fiscal</a>
+                <a href="departamento-pessoal.html" class="button">Departamento Pessoal</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="homePageUser.js"></script>
+</body>
+</html>

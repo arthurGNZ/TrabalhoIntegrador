@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Departamento Pessoal - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="dashboardDP.css">
+</head>
+<body>
+    <div class="header">
+        <a href="#" class="logo-styleDolink">
+            <img src="logo-simbolo.png" alt="Contaseg Logo" class="logo">
+            <div class="title">
+                <h1>CONTASEG</h1>
+                <h2>CONTABILIDADE E SEGUROS</h2>
+            </div>
+        </a>
+        <div class="menu-icon" onclick="openNav()">Minhas Empresas</div>
+    </div>
+
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="#">Empresa 1</a>
+        <a href="#">Empresa 2</a>
+    </div>
+
+    <div class="container">
+        <h3>Departamento Pessoal</h3>
+        <div class="row">
+            <div class="wide-widget-vertical">
+                <h4>Informações sobre a empresa</h4>
+                <ul>
+                    <li>Fator R</li>
+                    <li>Quantidade de funcionários</li>
+                    <li>Folha salarial</li>
+                    <li>etc ...</li>
+                </ul>
+            </div>
+            <div class="column-widgets">
+                <div class="widget">
+                    <h4>Gráfico comparativo entre percentual da folha salarial e valor minimo necessário para obter desconto fiscais</h4>
+                    <div class="placeholder">Placeholder</div>
+                </div>
+                <div class="widget">
+                    <h4>Evolução da quantidade de funcionários ao longo dos meses</h4>
+                    <div class="placeholder">Placeholder</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboardDP.js"></script>
+</body>
+</html>
