@@ -21,7 +21,7 @@ export const Header = () => {
         <Link href="/" className="logo-styleDoLink">
           <img
             src="/logo-simbolo.png"
-            alt="Contaseg Logo"
+            alt="Logo da empresa Contaseg"
             className="logo"
           />
           <div className="title">
@@ -37,7 +37,7 @@ export const Header = () => {
         <button className="closebtn" onClick={closeNav}>
           &times;
         </button>
-        <Link href="/list-person">Usuários</Link>
+        <Link href="/list-users">Usuários</Link>
         <Link href="/list-companies">Empresas</Link>
         <Link href="/list-roles">Papéis</Link>
       </div>

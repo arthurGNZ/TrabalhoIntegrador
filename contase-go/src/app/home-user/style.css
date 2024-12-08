@@ -1,0 +1,127 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(to bottom, #1e90ff, #d3d3d3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    color: #fff;
+  }
+  
+  .container-home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 1200px;
+    margin-top: 150px;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 20px;
+  }
+  
+  .infoBanner {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 22px;
+    font-weight: bold;
+    padding: 20px;
+    background: linear-gradient(to left, #1e90ff, #1c7ed6);
+    border-radius: 8px;
+    width: 100%; 
+    max-width: 800px; 
+    color: #fff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    border: 1px solid #ffffff;
+  }
+  
+  .selectionBox {
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 30px;
+    border-radius: 16px;
+    width: 100%; 
+    max-width: 800px;
+    color: #fff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    border: 1px solid #838383;
+  }
+  
+  .selectionBox h3 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .companySelect {
+    padding: 12px;
+    font-size: 16px;
+    background-color: #333;
+    color: #fff;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #fff;
+    width: 100%; 
+  }
+  
+  .buttons {
+    display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 20px;
+    flex-wrap: wrap; 
+  }
+  
+  .button {
+    background-color: #00c6ff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 10px 0; 
+    width: calc(50% - 20px);
+    text-align: center;
+    box-sizing: border-box;
+  }
+  
+  .button:hover {
+    background-color: #0072ff;
+  }
+  
+  @media (max-width: 768px) {
+    .container-home {
+      width: 90%;
+    }
+  
+    .buttons {
+      flex-direction: column;
+      width: 100%;
+      align-items: center;
+    }
+  
+    .button {
+      width: 80%; 
+      margin: 10px 0;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .container-home {
+      padding: 10px; 
+    }
+  
+    .infoBanner {
+      font-size: 18px; 
+    }
+  
+    .button {
+      font-size: 16px; 
+      padding: 12px 18p;
+    }
+  
+    .companySelect {
+      font-size: 14px; 
+    }
+  }  
