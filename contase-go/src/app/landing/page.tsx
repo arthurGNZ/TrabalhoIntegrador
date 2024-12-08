@@ -6,7 +6,6 @@ import Link from 'next/link';
 const LandingScreen = () => {
     return (
         <>
-        <body>
         <header>
             <div className="logo-container">
                 <a href="URL_DO_DESTINO" className="logo-styleDoLink">
@@ -40,7 +39,6 @@ const LandingScreen = () => {
             </nav>
         </section>
         </main>
-        </body>
         </>
     );
 }

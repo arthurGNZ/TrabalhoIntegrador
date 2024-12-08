@@ -18,7 +18,7 @@ const LoginScreen = () => {
         };
 
         try {
-            const response = await fetch('link/auth/login', {
+            const response = await fetch('https://3e2e-2804-108c-d3a4-4200-4da3-3adb-ebb9-3f44.ngrok-free.app/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ const LoginScreen = () => {
             if (response.ok) {
                 const data = await response.json();
                 console.log('Login bem-sucedido:', data);
-                router.push('/dashboard');
+                router.push('/dashboard-financeiro');
             } else {
                 const errorData = await response.json();
                 setInformation(errorData.message || 'Erro ao fazer login');
