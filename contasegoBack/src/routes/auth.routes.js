@@ -6,5 +6,6 @@ router.post('/login', AuthController.login);
 router.post('/lost-password', AuthController.lostPassword);
 router.post('/change-password', authMiddleware, AuthController.changePassword);
 router.post('/change-company', authMiddleware, AuthController.changeCompany);
+router.get('/validate-token', AuthController.validateToken);
 
 module.exports = router;

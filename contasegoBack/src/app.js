@@ -5,7 +5,7 @@ const { testConnection } = require('./config/database');
 
 const authRoutes = require('./routes/auth.routes.js');
 const personRoutes = require('./routes/person.routes.js');
-const rolesRoutes = require('./routes/rolesRoutes');
+const rolesRoutes = require('./routes/role.routes.js');
 const businessRoutes = require('./routes/business.routes.js');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 
@@ -18,7 +18,7 @@ testConnection();
 
 app.use('/auth', authRoutes);
 app.use('/person', personRoutes);
-app.use('/roles', rolesRoutes);
+app.use('/role', rolesRoutes);
 app.use('/business', businessRoutes);
 app.use('/dashboard', dashboardRoutes);
 

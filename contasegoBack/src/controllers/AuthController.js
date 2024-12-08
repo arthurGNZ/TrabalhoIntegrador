@@ -47,6 +47,22 @@ class AuthController {
       return res.status(error.status || 500).json({ error: error.message });
     }
   }
+// Em authController.js
+async validateToken(req, res) {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    
+    if (!token) {
+      return res.status(401).json({ valid: false });
+    }
+
+    await authService.validateToken(token);
+    return res.json({ valid: true });
+  } catch (error) {
+    return res.status(401).json({ valid: false });
+  }
+}
+
 }
 
 module.exports = new AuthController();

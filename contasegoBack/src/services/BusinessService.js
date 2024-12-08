@@ -152,43 +152,51 @@ class BusinessService {
       data_criacao: business.data_criacao
     };
   }
-
-  async listShort(search = '', user) {
-    try {
-      let whereCondition = search ? {
-        razao_social: { [Op.iLike]: `%${search}%` }
-      } : {};
   
-      // Se não for ADM, busca apenas empresas associadas ao usuário
-      if (!user.permissions.includes('ADM')) {
-        const userBusinesses = await Contrato.findAll({
-          where: { cpf_pessoa: user.cpf },
-          attributes: ['cnpj_empresa']
+    async listShort(search = '', user) {
+      try {
+        let whereCondition = search ? {
+          razao_social: { [Op.iLike]: `%${search}%` }
+        } : {};
+  
+        if (!user?.permissoes) {
+          throw new Error('Usuário não autorizado');
+        }
+  
+        const isAdmin = user.permissoes.some(
+          permissao => permissao.sigla === 'ADM'  
+        );
+  
+        if (!isAdmin) {
+          const userBusinesses = await Contrato.findAll({
+            where: { cpf_pessoa: user.cpf },
+            attributes: ['cnpj_empresa']
+          });
+  
+          whereCondition = {
+            ...whereCondition,
+            cnpj: {
+              [Op.in]: userBusinesses.map(contract => contract.cnpj_empresa)
+            }
+          };
+        }
+  
+        const businesses = await Business.findAll({
+          where: whereCondition,
+          attributes: ['cnpj', 'razao_social'],
+          order: [['razao_social', 'ASC']],
+          limit: 50
         });
   
-        whereCondition = {
-          ...whereCondition,
-          cnpj: {
-            [Op.in]: userBusinesses.map(contract => contract.cnpj_empresa)
-          }
-        };
+        return businesses.map(business => ({
+          cnpj: business.cnpj,
+          razao_social: business.razao_social
+        }));
+      } catch (error) {
+        throw new Error(`Erro ao listar empresas: ${error.message}`);
       }
-  
-      const businesses = await Business.findAll({
-        where: whereCondition,
-        attributes: ['cnpj', 'razao_social'],
-        order: [['razao_social', 'ASC']],
-        limit: 50
-      });
-  
-      return businesses.map(business => ({
-        cnpj: business.cnpj,
-        razao_social: business.razao_social
-      }));
-    } catch (error) {
-      throw new Error(`Erro ao listar empresas: ${error.message}`);
     }
   }  
-}
+
 
 module.exports = new BusinessService();
