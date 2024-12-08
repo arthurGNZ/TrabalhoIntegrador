@@ -51,7 +51,7 @@ const CreateUser = () => {
 
     try {
       const accessToken = localStorage.getItem('access_token');
-      const response = await fetch('https://50e5-177-184-217-182.ngrok-free.app/person/', {
+      const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/person/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

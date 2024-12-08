@@ -7,13 +7,14 @@ import { useRouter } from 'next/navigation';
 
 const HomeAdmin = () => {
   const router = useRouter();
-  /*async function verifyToken() {
-    const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcGYiOiIxMjM0NTY3ODkwMSIsIm5vbWUiOiJBZG1pbmlzdHJhZG9yIFNpc3RlbWEiLCJlbWFpbCI6ImdiZ29pczE5OUBnbWFpbC5jb20iLCJlbXByZXNhIjp7ImNucGoiOiIxMjM0NTY3ODAwMDE5OSIsInJhemFvX3NvY2lhbCI6IkVtcHJlc2EgVGVzdGUgTFREQSIsImVtYWlsIjoiY29udGF0b0BlbXByZXNhdGVzdGUuY29tLmJyIn0sImNhcmdvIjoiQURTIiwicGVybWlzc29lcyI6W3sic2lnbGEiOiJBRE0iLCJub21lIjoiU3VwZXIgQWRtaW4ifSx7InNpZ2xhIjoiREYiLCJub21lIjoiRGVwYXJ0YW1lbnRvIEZpc2NhbCJ9LHsic2lnbGEiOiJEUCIsIm5vbWUiOiJEZXBhcnRhbWVudG8gcGVzc29hbCJ9XSwiaWF0IjoxNzMzNjg2MDg4LCJleHAiOjE3MzM2ODc4ODh9.pIvsdLoSSu2XELbAg969ymIow6qtZdFFJbsDvr5cK7s';
-    const response = await fetch('https://3d33-177-184-217-182.ngrok-free.app/auth/validate-token', {
+  async function verifyToken() {
+    const accessToken = localStorage.getItem('access_token');
+    const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/auth/validate-token', {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`,
-        }
+            'ngrok-skip-browser-warning': 'true'  
+          }
     });
     if (response.ok) {
       console.log(response);
@@ -25,33 +26,8 @@ const HomeAdmin = () => {
     //  }
     //}
     }
-  }*/
-    async function verifyToken() {
-      const accessToken = localStorage.getItem('access_token');
-  
-      try {
-          const response = await fetch('https://3d33-177-184-217-182.ngrok-free.app/auth/validate-token', {
-              method: 'GET',
-              headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${accessToken}`,
-                  'ngrok-skip-browser-warning': '69420'
-              },
-              mode: 'cors',
-              credentials: 'include'
-          });
-  
-          console.log('Response status:', response.status);
-  
-          if (response.ok) {
-              const verifyToken = await response.json();
-              console.log('Verify token:', verifyToken);
-              return verifyToken;
-          }
-      } catch (error) {
-          console.error('Error:', error);
-      }
   }
+    
 
   useEffect(() => {
     verifyToken();

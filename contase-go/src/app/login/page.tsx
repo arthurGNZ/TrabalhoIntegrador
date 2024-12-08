@@ -26,7 +26,7 @@ const LoginScreen = () => {
             senha: password
         };
         try {
-            const response = await fetch('https://50e5-177-184-217-182.ngrok-free.app/auth/login', {
+            const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
