@@ -6,50 +6,33 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { jwtDecode } from 'jwt-decode';
 
-const LoginScreen = () => {
-        
-    function saveTokenAndExpirationTime (token: any) {
-        const expirationTime = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;//1 Mês
-        localStorage.setItem('access_token', token);
-        localStorage.setItem('expires_in', expirationTime.toString());
-    }
+const NewPass = () => {
 
     const router = useRouter();
     const [information, setInformation] = useState('');
-    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
         const loginData = {
-            email: username,
-            senha: password
+            nova_senha: password
         };
         try {
-            const response = await fetch('https://50e5-177-184-217-182.ngrok-free.app/auth/login', {
+            const accessToken = localStorage.getItem('access_token');
+            const response = await fetch('https://50e5-177-184-217-182.ngrok-free.app/auth/change-password', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
                 },
                 body: JSON.stringify(loginData),
             });
             if (response.ok) {
-                const data = await response.json();
-                console.log('Login bem-sucedido:', data);
-                saveTokenAndExpirationTime(data.token);
-                const token = data.token;
-                try {
-                    const decodedToken = jwtDecode(token);
-                    console.log('Dados do usuário:', decodedToken);
-                    //adicionar lógica para adm/trocar_senha/user
-                    router.push('/home-admin');
-                } catch (error) {
-                    setInformation('Erro ao processar os dados do token');
-                    console.error(error);
-                }
+                const data = await response.json();                
+                router.push('/login');
             } else {
                 const errorData = await response.json();
-                setInformation(errorData.message || 'Erro ao fazer login');
+                setInformation(errorData.message || 'Erro ao redefinir senha');
             }
         } catch (error) {
             setInformation('Erro ao fazer a requisição');
@@ -71,19 +54,8 @@ const LoginScreen = () => {
                     </Link>
                 </div>
                 <div className="login">
-                    <h3>Login</h3>
+                    <h3>Redefinição de Senha</h3>
                     <form onSubmit={handleSubmit}>
-                        <div className="input">
-                            <label htmlFor="username">Usuário</label>
-                            <input
-                                type="text"
-                                id="username"
-                                name="username"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)} 
-                                required
-                            />
-                        </div>
                         <div className="input">
                             <label htmlFor="password">Senha</label>
                             <input
@@ -95,7 +67,7 @@ const LoginScreen = () => {
                                 required
                             />
                         </div>
-                        <button type="submit">Entrar</button>
+                        <button type="submit">Redefinir</button>
                     </form>
                     {information && <p>{information}</p>}
                 </div>
@@ -104,4 +76,4 @@ const LoginScreen = () => {
     );
 };
 
-export default LoginScreen;
+export default NewPass;

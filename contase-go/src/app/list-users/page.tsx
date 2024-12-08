@@ -21,13 +21,32 @@ const ListarUsuarios = () => {
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
   const [users, setUsers] = useState<User[]>([]);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
   const togglePermissions = (userId: string) => {
     setExpandedUser(expandedUser === userId ? null : userId);
   };
+
+  async function loadUsers() {
+    try {
+      const accessToken = localStorage.getItem('access_token');
+      const response = await fetch('https://50e5-177-184-217-182.ngrok-free.app/person', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      });
+  
+      if (response.ok) {
+         console.log(response);
+         
+      } else {
+        console.error(`Erro ao carregar usuários: ${response.status} - ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Erro na requisição:', error);
+    }
+  }
+  
 
   useEffect(() => {
     setTimeout(() => {
@@ -53,6 +72,7 @@ const ListarUsuarios = () => {
       ];
       setUsers(fetchedUsers);
     }, 1000); 
+    loadUsers();
   }, []);
 
   return (
