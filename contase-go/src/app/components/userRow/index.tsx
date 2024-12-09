@@ -1,5 +1,4 @@
 'use client';
-// UserRow.tsx
 import React from "react";
 
 type Permission = {
@@ -37,7 +36,7 @@ const UserRow: React.FC<UserRowProps> = ({
           <button className="btn-action delete">Excluir</button>
         </td>
       </tr>
-      {isExpanded && (
+      {isExpanded && permissions.length > 0 && (
         <tr className="permissions-row">
           <td colSpan={4}>
             <table className="table-mini">

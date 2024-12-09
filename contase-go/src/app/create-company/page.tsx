@@ -2,13 +2,12 @@
 import { useState } from 'react';
 import { Header } from '../components/header';
 import './style.css';
-
+import { useRouter } from 'next/navigation';
 export default function Home() {
+  const router = useRouter();
   const [cnpj, setCnpj] = useState('');
   const [razaoSocial, setRazaoSocial] = useState('');
   const [email, setEmail] = useState('');
-  const [dataCriacao, setDataCriacao] = useState('');
-  const [dataInicioContrato, setDataInicioContrato] = useState('');
   const [telefone1, setTelefone1] = useState('');
   const [telefone2, setTelefone2] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -55,11 +54,41 @@ export default function Home() {
     setTelefone2(formattedTelefone);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+
+    const data = {
+      cnpj: cnpj.replace(/\D/g, ''), 
+      razao_social: razaoSocial,
+      email: email,
+      telefone1: telefone1.replace(/\D/g, ''),
+      telefone2: telefone2.replace(/\D/g, '') 
+    };
+
+    try {
+      const accessToken = localStorage.getItem('access_token');
+      const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/business', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        console.log('Empresa criado com sucesso');
+        router.push('/home-admin');
+      } else {
+        console.error('Erro ao criar empresa:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Erro na requisição:', error);
+    }
   };
+
 
   return (
     <div>
@@ -104,31 +133,6 @@ export default function Home() {
                   value={email}
                   required
                   onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div className="input-group">
-                <label htmlFor="data_criacao">Data de Criação da Empresa</label>
-                <input
-                  type="date"
-                  id="data_criacao"
-                  name="data_criacao"
-                  value={dataCriacao}
-                  required
-                  onChange={(e) => setDataCriacao(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="input-row">
-              <div className="input-group">
-                <label htmlFor="data_inicio_contrato">Data de Início de Contrato com a Contaseg</label>
-                <input
-                  type="date"
-                  id="data_inicio_contrato"
-                  name="data_inicio_contrato"
-                  value={dataInicioContrato}
-                  required
-                  onChange={(e) => setDataInicioContrato(e.target.value)}
                 />
               </div>
               <div className="input-group">

@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 
 type Permission = {
-  description: string;
+  sigla: string;
+  nome: string;
 };
 
-type Role = {
-  id: string;
-  name: string;
-  description: string;
-  permissions: Permission[];
+type Role1 = {
+  sigla_cargo: string;
+  nome: string;
+  permissoes: Permission[];
   onEdit: () => void;
   onDelete: () => void;
 };
 
-const RoleRow: React.FC<Role> = ({ id, name, description, permissions, onEdit, onDelete }) => {
+const RoleRow: React.FC<Role1> = ({ sigla_cargo, nome, permissoes, onEdit, onDelete }) => {
   const [expanded, setExpanded] = useState<boolean>(false);
 
   const togglePermissions = () => {
@@ -26,8 +26,8 @@ const RoleRow: React.FC<Role> = ({ id, name, description, permissions, onEdit, o
         <td className="accordion-arrow" onClick={togglePermissions}>
           {expanded ? '▼' : '▶'}
         </td>
-        <td>{name}</td>
-        <td>{description}</td>
+        <td>{nome}</td>
+        <td>{sigla_cargo}</td>
         <td>
           <button className="btn-action edit" onClick={onEdit}>Editar</button>
           <button className="btn-action delete" onClick={onDelete}>Excluir</button>
@@ -43,9 +43,9 @@ const RoleRow: React.FC<Role> = ({ id, name, description, permissions, onEdit, o
                 </tr>
               </thead>
               <tbody>
-                {permissions.map((permission, index) => (
+                {permissoes.map((permissoes, index) => (
                   <tr key={index}>
-                    <td>{permission.description}</td>
+                    <td>{permissoes.nome}</td>
                   </tr>
                 ))}
               </tbody>
