@@ -15,6 +15,9 @@ const CreateUser = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isCpfEditable, setIsCpfEditable] = useState(false);
+  const [companies, setCompanies] = useState<any[]>([]); 
+  const [roles, setRoles] = useState<any[]>([]); 
+  const [contratos, setContratos] = useState<any[]>([]); 
 
   let userCpf: string | null = null
 
@@ -67,6 +70,39 @@ async function loadUser() {
           
         }
 }
+async function loadCompaniesAndRoles() {
+  const accessToken = localStorage.getItem('access_token');
+  try {
+    const companyResponse = await fetch('https://8351-177-184-217-182.ngrok-free.app/business', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+        'ngrok-skip-browser-warning': 'true'  
+      },
+    });
+    const roleResponse = await fetch('https://8351-177-184-217-182.ngrok-free.app/role', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+        'ngrok-skip-browser-warning': 'true'  
+      },
+    });
+    
+    const companiesData = await companyResponse.json();
+    const rolesData = await roleResponse.json();
+
+    setCompanies(companiesData.data);
+    setRoles(rolesData.data);
+    console.log(companiesData.data, rolesData.data);
+    
+  } catch (err) {
+    setError('Erro ao carregar empresas ou cargos.');
+    console.error('Erro ao carregar empresas ou cargos:', err);
+  }
+}
+
 async function saveUser(){
   const userData = {
     cpf: cpf.replace(/\D/g, ''),
