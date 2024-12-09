@@ -10,43 +10,43 @@ class PersonController {
         data_nascimento, 
         telefone_principal, 
         telefone_secundario, 
-        empresas 
+        contratos 
       } = req.body;
-
+  
       if (!cpf || !nome || !email) {
         return res.status(400).json({ 
           error: 'Campos obrigatórios não informados: cpf, nome e email são necessários' 
         });
       }
-
+  
       if (!/^\d{11}$/.test(cpf)) {
         return res.status(400).json({ 
           error: 'CPF deve conter 11 dígitos numéricos' 
         });
       }
-
+  
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         return res.status(400).json({ 
           error: 'Formato de email inválido' 
         });
       }
-
-      if (empresas) {
-        if (!Array.isArray(empresas)) {
+  
+      if (contratos !== undefined) {
+        if (!Array.isArray(contratos)) {
           return res.status(400).json({ 
-            error: 'O campo empresas deve ser um array' 
+            error: 'O campo contratos deve ser um array' 
           });
         }
-
-        for (const empresa of empresas) {
-          if (!empresa.cnpj_empresa || !empresa.sigla_cargo) {
+  
+        for (const contrato of contratos) {
+          if (!contrato.empresa?.cnpj || !contrato.cargo?.sigla) {
             return res.status(400).json({ 
-              error: 'Cada empresa deve conter cnpj_empresa e sigla_cargo' 
+              error: 'Cada contrato deve conter empresa.cnpj e cargo.sigla' 
             });
           }
         }
       }
-
+  
       const person = await personService.create({
         cpf,
         nome,
@@ -54,14 +54,10 @@ class PersonController {
         data_nascimento,
         telefone_principal,
         telefone_secundario,
-        empresas
+        contratos
       });
-
-      return res.status(201).json({
-        cpf: person.cpf,
-        nome: person.nome,
-        email: person.email
-      });
+  
+      return res.status(201).json(person);
     } catch (error) {
       console.error('Erro ao criar pessoa:', error);
       return res.status(error.status || 500).json({ 
@@ -79,51 +75,47 @@ class PersonController {
         data_nascimento, 
         telefone_principal, 
         telefone_secundario, 
-        empresas 
+        contratos 
       } = req.body;
-
+  
       if (!nome || !email) {
         return res.status(400).json({ 
           error: 'Campos obrigatórios não informados: nome e email são necessários' 
         });
       }
-
+  
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         return res.status(400).json({ 
           error: 'Formato de email inválido' 
         });
       }
-
-      if (empresas !== undefined) {
-        if (!Array.isArray(empresas)) {
+  
+      if (contratos !== undefined) {
+        if (!Array.isArray(contratos)) {
           return res.status(400).json({ 
-            error: 'O campo empresas deve ser um array' 
+            error: 'O campo contratos deve ser um array' 
           });
         }
-
-        for (const empresa of empresas) {
-          if (!empresa.cnpj_empresa || !empresa.sigla_cargo) {
+  
+        for (const contrato of contratos) {
+          if (!contrato.empresa?.cnpj || !contrato.cargo?.sigla) {
             return res.status(400).json({ 
-              error: 'Cada empresa deve conter cnpj_empresa e sigla_cargo' 
+              error: 'Cada contrato deve conter empresa.cnpj e cargo.sigla' 
             });
           }
         }
       }
-
+  
       const updatedPerson = await personService.update(cpf, {
         nome,
         email,
         data_nascimento,
         telefone_principal,
         telefone_secundario,
-        empresas
+        contratos
       });
-
-      return res.json({
-        cpf: updatedPerson.cpf,
-        nome: updatedPerson.nome,
-        email: updatedPerson.email
-      });
+  
+      return res.json(updatedPerson);
     } catch (error) {
       console.error('Erro ao atualizar pessoa:', error);
       return res.status(error.status || 500).json({ 
@@ -131,7 +123,7 @@ class PersonController {
       });
     }
   }
-
+    
   async delete(req, res) {
     try {
       const { cpf } = req.params;
@@ -154,51 +146,8 @@ class PersonController {
 
   async list(req, res) {
     try {
-      const { 
-        page = 1, 
-        limit = 10, 
-        search = '',
-        sortField = 'nome',
-        sortOrder = 'asc'
-      } = req.query;
-      
-      const options = {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        search: search.trim(),
-        sortField,
-        sortOrder: sortOrder.toLowerCase()
-      };
-
-      if (options.page < 1 || options.limit < 1 || options.limit > 100) {
-        return res.status(400).json({
-          error: 'Parâmetros de paginação inválidos. Page deve ser >= 1 e limit entre 1 e 100'
-        });
-      }
-
-      if (!['asc', 'desc'].includes(options.sortOrder)) {
-        return res.status(400).json({
-          error: 'Ordenação deve ser "asc" ou "desc"'
-        });
-      }
-
-      if (!['nome', 'email', 'cpf'].includes(options.sortField)) {
-        return res.status(400).json({
-          error: 'Campo de ordenação inválido. Deve ser "nome", "email" ou "cpf"'
-        });
-      }
-
-      const result = await personService.list(options);
-
-      return res.json({
-        data: result.pessoas,
-        pagination: {
-          total: result.total,
-          totalPages: Math.ceil(result.total / options.limit),
-          currentPage: options.page,
-          limit: options.limit
-        }
-      });
+      const result = await personService.list();
+      return res.json(result);
     } catch (error) {
       console.error('Erro ao listar pessoas:', error);
       return res.status(error.status || 500).json({ 
@@ -206,7 +155,6 @@ class PersonController {
       });
     }
   }
-
   async getById(req, res) {
     try {
       const { cpf } = req.params;
@@ -218,7 +166,7 @@ class PersonController {
       }
   
       const person = await personService.getById(cpf);
-      return res.json({ data: person });
+      return res.json(person);
   
     } catch (error) {
       console.error('Erro ao buscar pessoa:', error);
@@ -232,7 +180,7 @@ class PersonController {
       });
     }
   }
-
+  
   
 }
 

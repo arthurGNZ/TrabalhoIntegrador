@@ -19,6 +19,15 @@ Permissao.belongsToMany(Cargo, {
   otherKey: 'sigla_cargo'
 });
 
+Cargo.hasMany(CargoPermissao, {
+  foreignKey: 'sigla_cargo',
+  sourceKey: 'sigla_cargo'
+});
+CargoPermissao.belongsTo(Cargo, {
+  foreignKey: 'sigla_cargo',
+  targetKey: 'sigla_cargo'
+});
+
 Pessoa.belongsToMany(Empresa, { 
   through: Contrato,
   foreignKey: 'cpf_pessoa',

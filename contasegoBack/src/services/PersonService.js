@@ -10,38 +10,46 @@ class PersonService {
   }
 
   async create(data) {
-    const { cpf, nome, email, data_nascimento, telefone_principal, telefone_secundario, empresas } = data;
-
+    const { 
+      cpf, 
+      nome, 
+      email, 
+      data_nascimento, 
+      telefone_principal, 
+      telefone_secundario, 
+      contratos 
+    } = data;
+  
     const pessoaExiste = await Pessoa.findOne({ where: { cpf } });
     if (pessoaExiste) {
       throw new Error('CPF já cadastrado no sistema');
     }
-
+  
     const emailExiste = await Pessoa.findOne({ where: { email } });
     if (emailExiste) {
       throw new Error('Email já cadastrado no sistema');
     }
-
-    if (empresas && empresas.length > 0) {
-      for (const contrato of empresas) {
-        const empresa = await Empresa.findByPk(contrato.cnpj_empresa);
+  
+    if (contratos) {
+      for (const contrato of contratos) {
+        const empresa = await Empresa.findByPk(contrato.empresa.cnpj);
         if (!empresa) {
-          throw new Error(`Empresa com CNPJ ${contrato.cnpj_empresa} não encontrada`);
+          throw new Error(`Empresa com CNPJ ${contrato.empresa.cnpj} não encontrada`);
         }
-
-        const cargo = await Cargo.findByPk(contrato.sigla_cargo);
+  
+        const cargo = await Cargo.findByPk(contrato.cargo.sigla);
         if (!cargo) {
-          throw new Error(`Cargo ${contrato.sigla_cargo} não encontrado`);
+          throw new Error(`Cargo ${contrato.cargo.sigla} não encontrado`);
         }
       }
     }
-
+  
     const transaction = await sequelize.transaction();
-
+  
     try {
       const senha = this.generateRandomPassword();
       const senhaHash = await bcrypt.hash(senha, 12);
-
+  
       const novaPessoa = await Pessoa.create({
         cpf,
         nome,
@@ -54,38 +62,75 @@ class PersonService {
         data_ultimo_login: null,
         ultima_empresa_acessada: null
       }, { transaction });
-
-      if (empresas && empresas.length > 0) {
-        const contratos = empresas.map(e => ({
+  
+      if (contratos && contratos.length > 0) {
+        const novosContratos = contratos.map(c => ({
           cpf_pessoa: cpf,
-          cnpj_empresa: e.cnpj_empresa,
-          sigla_cargo: e.sigla_cargo,
+          cnpj_empresa: c.empresa.cnpj,
+          sigla_cargo: c.cargo.sigla,
           data_contrato: new Date()
         }));
-
-        await Contrato.bulkCreate(contratos, { transaction });
+  
+        await Contrato.bulkCreate(novosContratos, { transaction });
       }
-
+  
       await this.emailService.sendWelcomeEmail(email, nome, senha);
-
+  
       await transaction.commit();
-
-      return this.formatPersonResponse(await this.getById(cpf));
-
+  
+      const pessoaCriada = await Pessoa.findOne({
+        where: { cpf },
+        include: [{
+          model: Contrato,
+          required: false,
+          include: [
+            {
+              model: Empresa,
+              attributes: ['cnpj', 'razao_social']
+            },
+            {
+              model: Cargo,
+              attributes: ['sigla_cargo', 'nome']
+            }
+          ]
+        }],
+        attributes: {
+          exclude: ['senha', 'alterar_senha', 'data_ultimo_login', 'ultima_empresa_acessada']
+        }
+      });
+  
+      return {
+        nome: pessoaCriada.nome,
+        email: pessoaCriada.email,
+        data_nascimento: pessoaCriada.data_nascimento,
+        telefone_principal: pessoaCriada.telefone_principal || null,
+        telefone_secundario: pessoaCriada.telefone_secundario || null,
+        contratos: pessoaCriada.Contratos.map(contrato => ({
+          empresa: {
+            cnpj: contrato.Empresa.cnpj,
+            razao_social: contrato.Empresa.razao_social
+          },
+          cargo: {
+            sigla: contrato.Cargo.sigla_cargo,
+            nome: contrato.Cargo.nome
+          }
+        }))
+      };
+  
     } catch (error) {
       await transaction.rollback();
       throw new Error(`Erro ao criar pessoa: ${error.message}`);
     }
   }
-
+  
   async update(cpf, data) {
-    const { nome, email, data_nascimento, telefone_principal, telefone_secundario, empresas } = data;
-
+    const { nome, email, data_nascimento, telefone_principal, telefone_secundario, contratos } = data;
+  
     const pessoa = await Pessoa.findByPk(cpf);
     if (!pessoa) {
       throw new Error('Pessoa não encontrada');
     }
-
+  
     if (email !== pessoa.email) {
       const emailExiste = await Pessoa.findOne({ 
         where: { 
@@ -97,23 +142,67 @@ class PersonService {
         throw new Error('Email já cadastrado no sistema');
       }
     }
-
-    if (empresas) {
-      for (const contrato of empresas) {
-        const empresa = await Empresa.findByPk(contrato.cnpj_empresa);
-        if (!empresa) {
-          throw new Error(`Empresa com CNPJ ${contrato.cnpj_empresa} não encontrada`);
-        }
-
-        const cargo = await Cargo.findByPk(contrato.sigla_cargo);
-        if (!cargo) {
-          throw new Error(`Cargo ${contrato.sigla_cargo} não encontrado`);
+  
+    const contratosAtuais = await Contrato.findAll({
+      where: { cpf_pessoa: cpf },
+      include: [{
+        model: Cargo,
+        required: true,
+        include: [{
+          model: CargoPermissao,
+          required: true,
+          where: {
+            sigla_permissao: 'ADM'
+          }
+        }]
+      }]
+    });
+  
+    if (contratosAtuais.length > 0) {
+      const cargosAdmAtuais = contratosAtuais.map(c => c.Cargo.sigla_cargo);
+  
+      const mantemAlgumCargoAdm = contratos?.some(c => cargosAdmAtuais.includes(c.cargo.sigla)) ?? false;
+  
+      if (!mantemAlgumCargoAdm) {
+        const outrosContratosAdm = await Contrato.count({
+          where: {
+            cpf_pessoa: { [Op.ne]: cpf }
+          },
+          include: [{
+            model: Cargo,
+            required: true,
+            include: [{
+              model: CargoPermissao,
+              required: true,
+              where: {
+                sigla_permissao: 'ADM'
+              }
+            }]
+          }]
+        });
+  
+        if (outrosContratosAdm === 0) {
+          throw new Error('O sistema não pode ficar sem administradores');
         }
       }
     }
-
+  
+    if (contratos) {
+      for (const contrato of contratos) {
+        const empresa = await Empresa.findByPk(contrato.empresa.cnpj);
+        if (!empresa) {
+          throw new Error(`Empresa com CNPJ ${contrato.empresa.cnpj} não encontrada`);
+        }
+  
+        const cargo = await Cargo.findByPk(contrato.cargo.sigla);
+        if (!cargo) {
+          throw new Error(`Cargo ${contrato.cargo.sigla} não encontrado`);
+        }
+      }
+    }
+  
     const transaction = await sequelize.transaction();
-
+  
     try {
       await pessoa.update({
         nome,
@@ -122,29 +211,66 @@ class PersonService {
         telefone_principal: telefone_principal || null,
         telefone_secundario: telefone_secundario || null
       }, { transaction });
-
-      if (empresas !== undefined) {
+  
+      if (contratos !== undefined) {
         await Contrato.destroy({
           where: { cpf_pessoa: cpf },
           transaction
         });
-
-        if (empresas.length > 0) {
-          const contratos = empresas.map(e => ({
+  
+        if (contratos.length > 0) {
+          const novosContratos = contratos.map(c => ({
             cpf_pessoa: cpf,
-            cnpj_empresa: e.cnpj_empresa,
-            sigla_cargo: e.sigla_cargo,
+            cnpj_empresa: c.empresa.cnpj,
+            sigla_cargo: c.cargo.sigla,
             data_contrato: new Date()
           }));
-
-          await Contrato.bulkCreate(contratos, { transaction });
+  
+          await Contrato.bulkCreate(novosContratos, { transaction });
         }
       }
-
+  
       await transaction.commit();
-
-      return this.formatPersonResponse(await this.getById(cpf));
-
+  
+      const pessoaAtualizada = await Pessoa.findOne({
+        where: { cpf },
+        include: [{
+          model: Contrato,
+          required: false,
+          include: [
+            {
+              model: Empresa,
+              attributes: ['cnpj', 'razao_social']
+            },
+            {
+              model: Cargo,
+              attributes: ['sigla_cargo', 'nome']
+            }
+          ]
+        }],
+        attributes: {
+          exclude: ['senha', 'alterar_senha', 'data_ultimo_login', 'ultima_empresa_acessada']
+        }
+      });
+  
+      return {
+        nome: pessoaAtualizada.nome,
+        email: pessoaAtualizada.email,
+        data_nascimento: pessoaAtualizada.data_nascimento,
+        telefone_principal: pessoaAtualizada.telefone_principal || null,
+        telefone_secundario: pessoaAtualizada.telefone_secundario || null,
+        contratos: pessoaAtualizada.Contratos.map(contrato => ({
+          empresa: {
+            cnpj: contrato.Empresa.cnpj,
+            razao_social: contrato.Empresa.razao_social
+          },
+          cargo: {
+            sigla: contrato.Cargo.sigla_cargo,
+            nome: contrato.Cargo.nome
+          }
+        }))
+      };
+  
     } catch (error) {
       await transaction.rollback();
       throw new Error(`Erro ao atualizar pessoa: ${error.message}`);
@@ -226,53 +352,41 @@ class PersonService {
     }
   }
 
-  async list({ page, limit, search, sortField, sortOrder }) {
-    const offset = (page - 1) * limit;
-    
-    const whereCondition = search ? {
-      [Op.or]: [
-        { nome: { [Op.iLike]: `%${search}%` } },
-        { email: { [Op.iLike]: `%${search}%` } }
-      ]
-    } : {};
-
+  async list() {
     try {
-      const { count, rows } = await Pessoa.findAndCountAll({
-        where: whereCondition,
-        offset,
-        limit,
-        distinct: true,
+      const pessoas = await Pessoa.findAll({
         include: [{
           model: Contrato,
           required: false,
           include: [
             {
               model: Empresa,
-              attributes: ['cnpj', 'razao_social']
+              attributes: ['razao_social']
             },
             {
               model: Cargo,
-              attributes: ['sigla_cargo', 'nome']
+              attributes: ['nome']
             }
           ]
         }],
-        order: [[sortField, sortOrder.toUpperCase()]],
-        attributes: {
-          exclude: ['senha']
-        }
+        attributes: ['cpf', 'nome', 'email'],
+        order: [['nome', 'ASC']]
       });
-
-      const pessoas = rows.map(pessoa => this.formatPersonResponse(pessoa));
-
-      return {
-        pessoas,
-        total: count
-      };
+  
+      return pessoas.map(pessoa => ({
+        id: pessoa.cpf,
+        name: pessoa.nome,
+        email: pessoa.email,
+        permissions: pessoa.Contratos.map(contrato => ({
+          role: contrato.Cargo.nome,
+          company: contrato.Empresa.razao_social
+        }))
+      }));
     } catch (error) {
       throw new Error(`Erro ao listar pessoas: ${error.message}`);
     }
   }
-
+  
   async getById(cpf) {
     try {
       const pessoa = await Pessoa.findOne({
@@ -292,20 +406,36 @@ class PersonService {
           ]
         }],
         attributes: {
-          exclude: ['senha']
+          exclude: ['senha', 'alterar_senha', 'data_ultimo_login', 'ultima_empresa_acessada']
         }
       });
-
+  
       if (!pessoa) {
         throw new Error('Pessoa não encontrada');
       }
-
-      return this.formatPersonResponse(pessoa);
+  
+      return {
+        nome: pessoa.nome,
+        email: pessoa.email,
+        data_nascimento: pessoa.data_nascimento,
+        telefone_principal: pessoa.telefone_principal || null,
+        telefone_secundario: pessoa.telefone_secundario || null,
+        contratos: (pessoa.Contratos || []).map(contrato => ({
+          empresa: {
+            cnpj: contrato.Empresa.cnpj,
+            razao_social: contrato.Empresa.razao_social
+          },
+          cargo: {
+            sigla: contrato.Cargo.sigla_cargo,
+            nome: contrato.Cargo.nome
+          }
+        }))
+      };
     } catch (error) {
       throw new Error(`Erro ao buscar pessoa: ${error.message}`);
     }
   }
-
+  
   formatPersonResponse(pessoa) {
     return {
       cpf: pessoa.cpf,
