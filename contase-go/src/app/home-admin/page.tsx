@@ -17,14 +17,10 @@ const HomeAdmin = () => {
           }
     });
     if (response.ok) {
-      console.log(response);
       const verifyToken = await response.json();
-      console.log(verifyToken);
-    //if (verifyToken.ok) {
-    //  if(verifyToken.valid){
-  //     router.push('/');
-    //  }
-    //}
+      if (!verifyToken.valid) {
+        router.push('/login');
+      }
     }
   }
     
@@ -42,15 +38,15 @@ const HomeAdmin = () => {
         </div>
         <div className="selectionBox">
           <div className="buttons">
-            <Link href="/create-user" className="button">Criar Usuário</Link>
+            <Link href="/create-user/new" className="button">Criar Usuário</Link>
             <Link href="/list-users" className="button">Listar Usuários</Link>
           </div>
           <div className="buttons">
-            <Link href="/create-company" className="button">Criar Empresa</Link>
+            <Link href="/create-company/new" className="button">Criar Empresa</Link>
             <Link href="/list-companies" className="button">Listar Empresas</Link>
           </div>
           <div className="buttons">
-            <Link href="/create-role" className="button">Criar Papel</Link>
+            <Link href="/create-role/new" className="button">Criar Papel</Link>
             <Link href="/list-roles" className="button">Listar Papéis</Link>
           </div>
         </div>

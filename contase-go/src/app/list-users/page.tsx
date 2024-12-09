@@ -10,7 +10,7 @@ type Permission = {
 };
 
 type User = {
-  cpf: string;
+  id: string;
   name: string;
   email: string;
   permissions: Permission[];  
@@ -36,41 +36,42 @@ const ListarUsuarios = () => {
       });
   
       if (response.ok) {
-         console.log(response);
          const data = await response.json();
-         setUsers(data.data);
+         setUsers(data);
       } else {
-        console.error("Erro ao carregar usuários: ${response.status} - ${response.statusText}");
+        console.error("Erro ao carregar usuários:");
       }
     } catch (error) {
       console.error('Erro na requisição:', error);
     }
   }
-  
+  const handleDelete = async (cpf: string) => {
+    const confirmed = confirm(`Tem certeza que deseja excluir o usuário com CPF: ${cpf}? Esta operação não pode ser desfeita.`);
+    if (confirmed) {
+      try {
+        const accessToken = localStorage.getItem('access_token');
+        const response = await fetch(`https://8351-177-184-217-182.ngrok-free.app/person/${cpf}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+          },
+        });
+        if (response.ok) {
+          alert('Usuário excluído com sucesso!');
+          setUsers(users.filter(user => user.id !== cpf));
+        } else {
+          console.error(`Erro ao excluir o usuário: ${response.status} - ${response.statusText}`);
+          alert('Erro ao excluir o usuário.');
+        }
+      } catch (error) {
+        console.error('Erro na requisição DELETE:', error);
+        alert('Erro ao excluir o usuário.');
+      }
+    }
+  };
   useEffect(() => {
     loadUsers();
-    /*setTimeout(() => {
-      const fetchedUsers: User[] = [
-        {
-          cpf: "user1",
-          name: "João Silva",
-          email: "joao@exemplo.com",
-          permissions: [
-            { role: "Gerente", company: "GREMIO" },
-            { role: "Supervisor", company: "FUTEBOL" },
-          ],
-        },
-        {
-          cpf: "user2",
-          name: "Maria Oliveira",
-          email: "maria@exemplo.com",
-          permissions: [
-            { role: "Administrador", company: "Naoseioqnaoseioqla" },
-            { role: "Usuario", company: "Craque" },
-          ],
-        },
-      ];
-      setUsers(fetchedUsers);});*/
   }, []);
 
   return (
@@ -89,14 +90,15 @@ const ListarUsuarios = () => {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+              {users.map((user, index) => (
                 <UserRow
-                  key={user.cpf}
-                  userId={user.cpf}
+                  key={user.id}
+                  userId={user.id}
                   name={user.name}
                   email={user.email}
                   permissions={user.permissions}  
-                  isExpanded={expandedUser === user.cpf}
+                  isExpanded={expandedUser === user.id}
+                  onDelete={()=>handleDelete(user.id)}
                   onTogglePermissions={togglePermissions}
                 />
               ))}

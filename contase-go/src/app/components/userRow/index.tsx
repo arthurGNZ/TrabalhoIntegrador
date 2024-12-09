@@ -1,5 +1,6 @@
 'use client';
 import React from "react";
+import Link from "next/link";
 
 type Permission = {
   role: string;
@@ -12,6 +13,7 @@ type UserRowProps = {
   email: string;
   isExpanded: boolean;
   permissions: Permission[]; 
+  onDelete: () => void;
   onTogglePermissions: (userId: string) => void;
 };
 
@@ -21,6 +23,7 @@ const UserRow: React.FC<UserRowProps> = ({
   email,
   isExpanded,
   permissions,
+  onDelete,
   onTogglePermissions,
 }) => {
   return (
@@ -32,8 +35,8 @@ const UserRow: React.FC<UserRowProps> = ({
         <td>{name}</td>
         <td>{email}</td>
         <td>
-          <button className="btn-action edit">Editar</button>
-          <button className="btn-action delete">Excluir</button>
+          <Link href={`/create-user/${userId}`}className="btn-action edit">Editar</Link>
+          <button className="btn-action delete" onClick={onDelete}>Excluir</button>
         </td>
       </tr>
       {isExpanded && permissions.length > 0 && (

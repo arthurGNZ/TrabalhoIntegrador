@@ -1,16 +1,15 @@
 import React from 'react';
-
+import Link from 'next/link';
 type Company = {
   cnpj: string;
   name: string;
   email: string;
   creationDate: string;
   phone: string;
-  onEdit: () => void;
   onDelete: () => void;
 };
 
-const CompanyRow: React.FC<Company> = ({ cnpj, name, email, creationDate, phone, onEdit, onDelete }) => {
+const CompanyRow: React.FC<Company> = ({ cnpj, name, email, creationDate, phone, onDelete }) => {
   return (
     <tr>
       <td>{cnpj}</td>
@@ -19,9 +18,9 @@ const CompanyRow: React.FC<Company> = ({ cnpj, name, email, creationDate, phone,
       <td>{creationDate}</td>
       <td>{phone}</td>
       <td>
-        <button className="btn-action edit" onClick={onEdit}>
+        <Link className="btn-action edit" href={`/create-company/${cnpj}`}>
           Editar
-        </button>
+        </Link>
         <button className="btn-action delete" onClick={onDelete}>
           Excluir
         </button>

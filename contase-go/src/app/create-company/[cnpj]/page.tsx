@@ -1,10 +1,11 @@
 'use client';
-import { useState } from 'react';
-import { Header } from '../components/header';
+import { useState, useEffect } from 'react';
+import { Header } from '../../components/header';
 import './style.css';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 export default function Home() {
   const router = useRouter();
+  const params = usePathname();
   const [cnpj, setCnpj] = useState('');
   const [razaoSocial, setRazaoSocial] = useState('');
   const [email, setEmail] = useState('');
@@ -12,7 +13,10 @@ export default function Home() {
   const [telefone2, setTelefone2] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCnpjEditable, setIsCnpjEditable] = useState(false);
   
+  let companyCnpj: string | null = null
+
   const formatarCNPJ = (input: string) => {
     let formattedCnpj = input.replace(/\D/g, ''); 
     if (formattedCnpj.length > 14) {
@@ -53,12 +57,41 @@ export default function Home() {
     const formattedTelefone = formatarTelefone(e.target.value);
     setTelefone2(formattedTelefone);
   };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-
+  const loadCompany = async (cnpj: string) => {
+    const accessToken = localStorage.getItem('access_token');
+    companyCnpj = params?.replace('/create-company/', '') ? params.replace('/create-company/', '') : null;
+    if(companyCnpj && companyCnpj !== 'new'){
+      try {
+        const response = await fetch(`https://8351-177-184-217-182.ngrok-free.app/business/${companyCnpj}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+            'ngrok-skip-browser-warning': 'true'  
+          },
+        });
+  
+        if (response.ok) {
+          const companyDTO = await response.json();
+          const companyData = companyDTO.data;
+          setIsCnpjEditable(true);
+          setCnpj(formatarCNPJ(companyData.cnpj));
+          setRazaoSocial(companyData.razao_social || '');
+          setEmail(companyData.email || '');
+          setTelefone1(formatarTelefone(companyData.telefone1) || '');
+          setTelefone2(formatarTelefone(companyData.telefone2) || '');
+        } else {
+          setError('Erro ao carregar dados da empresa.');
+        }
+      } catch (error) {
+        console.error('Erro na requisição:', error);
+        setError('Erro ao carregar dados da empresa.');
+      } finally {
+        
+      }
+    }
+  };
+  async function saveCompany(){
     const data = {
       cnpj: cnpj.replace(/\D/g, ''), 
       razao_social: razaoSocial,
@@ -80,16 +113,57 @@ export default function Home() {
 
       if (response.ok) {
         console.log('Empresa criado com sucesso');
-        router.push('/home-admin');
+        router.push('/list-companies');
       } else {
-        console.error('Erro ao criar empresa:', response.statusText);
+        console.error('Erro ao atualizar empresa');
       }
     } catch (error) {
-      console.error('Erro na requisição:', error);
+      console.error('Erro ao atualizar empresa');
     }
+  }
+  async function updateCompany(){
+    const data = {
+      razao_social: razaoSocial,
+      email: email,
+      telefone1: telefone1.replace(/\D/g, ''),
+      telefone2: telefone2.replace(/\D/g, '') 
+    };
+    companyCnpj = params?.replace('/create-company/', '') ? params.replace('/create-company/', '') : null;
+    try {
+      const accessToken = localStorage.getItem('access_token');
+      const response = await fetch(`https://8351-177-184-217-182.ngrok-free.app/business/${companyCnpj}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        console.log('Empresa editada com sucesso');
+        router.push('/list-companies');
+      } else {
+        console.error('Erro ao atualizar empresa');
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar empresa');
+    }
+  }
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    companyCnpj = params?.replace('/create-company/', '') ? params.replace('/create-company/', '') : null;
+    if(companyCnpj && companyCnpj === 'new'){
+      saveCompany(); 
+    }else{
+      updateCompany();
+    }
+    
   };
 
-
+  useEffect(() => {
+    loadCompany(cnpj);
+  }, []);
   return (
     <div>
       <Header/>
@@ -108,6 +182,7 @@ export default function Home() {
                   required
                   maxLength={18}
                   onChange={handleCnpjChange}
+                  readOnly={isCnpjEditable}
                 />
               </div>
               <div className="input-group">
@@ -163,9 +238,7 @@ export default function Home() {
               </div>
             </div>
 
-            <button type="submit" disabled={isLoading} className="subBtn">
-              {isLoading ? 'Criando...' : 'Criar Empresa'}
-            </button>
+            <button type="submit" disabled={isLoading} className="subBtn">Salvar Empresa</button>
             {error && <p className="error">{error}</p>}
           </form>
         </div>

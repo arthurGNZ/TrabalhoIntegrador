@@ -18,13 +18,35 @@ type Role = {
 const ListarRoles = () => {
   const [roles, setRoles] = useState<Role[]>([]);
 
-  const handleEdit = (roleId: string) => {
-    console.log(`Editando o papel com ID: ${roleId}`);
+
+  const handleDelete = async (roleSigla: string) => {
+    const confirmed = window.confirm(`Tem certeza que deseja excluir este papel? Esta operação não pode ser desfeita.`);
+    if (confirmed) {
+      try {
+        const accessToken = localStorage.getItem('access_token');
+        const response = await fetch(`https://8351-177-184-217-182.ngrok-free.app/role/${roleSigla}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+          },
+        });
+
+        if (response.ok) {
+          alert('Papel excluído com sucesso!');
+          setRoles(roles.filter(role => role.sigla_cargo !== roleSigla));
+        } else {
+          console.error(`Erro ao excluir o papel: ${response.status} - ${response.statusText}`);
+          alert('Erro ao excluir o papel.');
+        }
+      } catch (error) {
+        console.error('Erro na requisição DELETE:', error);
+        alert('Erro ao excluir o papel.');
+      }
+    }
   };
 
-  const handleDelete = (roleId: string) => {
-    console.log(`Excluindo o papel com ID: ${roleId}`);
-  };
+
   async function loadRoles() {
     try {
       const accessToken = localStorage.getItem('access_token');
@@ -38,7 +60,6 @@ const ListarRoles = () => {
       });
   
       if (response.ok) {
-         console.log(response);
          const data = await response.json();
          setRoles(data.data);
       } else {
@@ -73,7 +94,6 @@ const ListarRoles = () => {
                 sigla_cargo={role.sigla_cargo}
                 nome={role.nome}
                 permissoes={role.permissoes}
-                onEdit={() => handleEdit(role.sigla_cargo)}
                 onDelete={() => handleDelete(role.sigla_cargo)}
               />
             ))}

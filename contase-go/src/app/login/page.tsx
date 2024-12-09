@@ -33,16 +33,13 @@ const LoginScreen = () => {
             });
             if (response.ok) {
                 const data = await response.json();
-                console.log('Login bem-sucedido:', data);
                 saveToken(data.token);
                 const token = data.token;
-                console.log(data);
                 try {
                     if(data.alterar_senha){
                         router.push('/new-password');
                     }else{
                         const decodedToken = jwtDecode <Usuario>(token);
-                        console.log(decodedToken);
                         if(decodedToken.cargo==='ADS'){
                             router.push('/home-admin');
                         }else{

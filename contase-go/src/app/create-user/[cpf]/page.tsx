@@ -1,9 +1,11 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './style.css';
-import { Header } from '../components/header';
-
+import { Header } from '../../components/header';
+import { usePathname, useRouter } from 'next/navigation';
 const CreateUser = () => {
+  const router = useRouter();
+  const params = usePathname();
   const [cpf, setCpf] = useState('');
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
@@ -12,6 +14,9 @@ const CreateUser = () => {
   const [telefone2, setTelefone2] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCpfEditable, setIsCpfEditable] = useState(false);
+
+  let userCpf: string | null = null
 
   const formatarCPF = (input: string) => {
     let formattedCpf = input.replace(/\D/g, '');
@@ -34,47 +39,120 @@ const CreateUser = () => {
     return telefone;
   };
 
+async function loadUser() {
+        const accessToken = localStorage.getItem('access_token');
+        userCpf = params?.replace('/create-user/', '') ? params.replace('/create-user/', '') : null;
+
+        if (userCpf && userCpf !== 'new') {
+            
+            const response = await fetch(`https://8351-177-184-217-182.ngrok-free.app/person/${userCpf}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
+                    'ngrok-skip-browser-warning': 'true', 
+                }
+            });
+            
+            const userDTO = await response.json();
+            setIsCpfEditable(true);
+            
+            
+            setCpf(formatarCPF(userCpf));
+            setNome(userDTO.nome);
+            setEmail(userDTO.email);
+            setDataNascimento(userDTO.data_nascimento);
+            setTelefone1(formatarTelefone(userDTO.telefone_principal));
+            setTelefone2(userDTO.telefone_secundario);
+          
+        }
+}
+async function saveUser(){
+  const userData = {
+    cpf: cpf.replace(/\D/g, ''),
+    nome,
+    email,
+    data_nascimento: dataNascimento || undefined, 
+    telefone_principal: telefone1 || undefined,   
+    telefone_secundario: telefone2 || undefined,  
+    contratos: [], 
+  };
+  setIsLoading(true);
+  try {
+    const accessToken = localStorage.getItem('access_token');
+    const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/person/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(userData),
+    });
+
+    router.push('/list-users');
+  } catch (err) {
+    setError('Ocorreu um erro ao enviar os dados. Tente novamente.');
+    console.error('Erro:', err);
+  } finally {
+    setIsLoading(false);
+    
+  }
+}
+async function updateUser(){
+  userCpf = params?.replace('/create-user/', '') ? params.replace('/create-user/', '') : null;
+  const userData = {
+    cpf: cpf.replace(/\D/g, ''),
+    nome,
+    email,
+    data_nascimento: dataNascimento || undefined, 
+    telefone_principal: telefone1 || undefined,   
+    telefone_secundario: telefone2 || undefined,  
+    contratos: [], 
+  };
+
+  setIsLoading(true);
+
+  try {
+    const accessToken = localStorage.getItem('access_token');
+    const response = await fetch(`https://8351-177-184-217-182.ngrok-free.app/person/${userCpf}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+        'ngrok-skip-browser-warning': 'true'  
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Erro: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    router.push('/list-users');
+    
+  } catch (err) {
+    setError('Ocorreu um erro ao enviar os dados. Tente novamente.');
+    console.error('Erro:', err);
+  } finally {
+    setIsLoading(false);
+    
+  }
+}
   const handleSubmit = async (e: React.FormEvent) => {
+    userCpf = params?.replace('/create-user/', '') ? params.replace('/create-user/', '') : null;
     e.preventDefault();
-
-    const userData = {
-      cpf: cpf.replace(/\D/g, ''),
-      nome,
-      email,
-      data_nascimento: dataNascimento || undefined, 
-      telefone_principal: telefone1 || undefined,   
-      telefone_secundario: telefone2 || undefined,  
-      contratos: [], 
-    };
-
-    setIsLoading(true);
-
-    try {
-      const accessToken = localStorage.getItem('access_token');
-      const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/person/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(userData),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Erro: ${response.status} - ${errorText}`);
-      }
-
-      const data = await response.json();
-      console.log('Usuário criado com sucesso!', data);
-      alert('Usuário criado com sucesso!');
-    } catch (err) {
-      setError('Ocorreu um erro ao enviar os dados. Tente novamente.');
-      console.error('Erro:', err);
-    } finally {
-      setIsLoading(false);
+    if(userCpf==='new'){
+      saveUser();
+    }else{
+      updateUser();
     }
   };
+
+  useEffect(() => {
+    loadUser();
+  }, []);
 
   return (
     <div className="container-create">
@@ -93,6 +171,7 @@ const CreateUser = () => {
                 onChange={(e) => setCpf(formatarCPF(e.target.value))}
                 required
                 maxLength={14}
+                readOnly={isCpfEditable}
               />
             </div>
             <div className="input-group">

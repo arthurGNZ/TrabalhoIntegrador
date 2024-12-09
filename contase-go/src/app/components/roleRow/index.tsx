@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
+import Link from 'next/link';
 
 type Permission = {
   sigla: string;
   nome: string;
 };
 
-type Role1 = {
+type Role = {
   sigla_cargo: string;
   nome: string;
   permissoes: Permission[];
-  onEdit: () => void;
   onDelete: () => void;
 };
 
-const RoleRow: React.FC<Role1> = ({ sigla_cargo, nome, permissoes, onEdit, onDelete }) => {
+const RoleRow: React.FC<Role> = ({ sigla_cargo, nome, permissoes, onDelete }) => {
   const [expanded, setExpanded] = useState<boolean>(false);
 
   const togglePermissions = () => {
@@ -29,7 +29,7 @@ const RoleRow: React.FC<Role1> = ({ sigla_cargo, nome, permissoes, onEdit, onDel
         <td>{nome}</td>
         <td>{sigla_cargo}</td>
         <td>
-          <button className="btn-action edit" onClick={onEdit}>Editar</button>
+          <Link className="btn-action edit" href={`/create-role/${sigla_cargo}`}>Editar</Link>
           <button className="btn-action delete" onClick={onDelete}>Excluir</button>
         </td>
       </tr>
