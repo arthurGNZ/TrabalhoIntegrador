@@ -134,6 +134,10 @@ bcrypt@^5.1.1:
     "@mapbox/node-pre-gyp" "^1.0.11"
     node-addon-api "^5.0.0"
 
+big-integer@^1.6.51:
+  version "1.6.52"
+  resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.52.tgz#60a887f3047614a8e1bffe5d7173490a97dc8c85"
+
 binary-extensions@^2.0.0:
   version "2.3.0"
   resolved "https://registry.npmjs.org/binary-extensions/-/binary-extensions-2.3.0.tgz"
@@ -232,7 +236,7 @@ console-control-strings@^1.0.0, console-control-strings@^1.1.0:
   version "1.0.0"
   dependencies:
     bcrypt "^5.1.1"
-    contasegoBack "file:./../../../../AppData/Local/Yarn/cache/v1/npm-contasegoBack-1.0.0-6957e4d8-8e33-486e-9c9d-818c443cca60-1733529704339"
+    contasegoBack "file:./../../../../AppData/Local/Yarn/cache/v1/npm-contasegoBack-1.0.0-8ffab892-912c-423d-90a5-21eebc7a52d7-1733770362092"
     cors "^2.8.5"
     dotenv "^16.4.7"
     express "^4.18.2"
@@ -241,6 +245,8 @@ console-control-strings@^1.0.0, console-control-strings@^1.1.0:
     pg "^8.13.1"
     pg-hstore "^2.3.4"
     sequelize "^6.37.5"
+    swagger-jsdoc "^6.2.8"
+    swagger-ui-express "^5.0.1"
 
 content-disposition@0.5.4:
   version "0.5.4"
@@ -683,6 +689,10 @@ lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
 
+long@^5.2.3:
+  version "5.2.3"
+  resolved "https://registry.yarnpkg.com/long/-/long-5.2.3.tgz#a3ba97f3877cf1d778eccbcb048525ebb77499e1"
+
 make-dir@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/make-dir/-/make-dir-3.1.0.tgz#415e967046b3a7f1d185277d84aa58203726a13f"
@@ -773,6 +783,13 @@ node-fetch@^2.6.7:
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.7.0.tgz#d0f0fa6e3e2dc1d27efcd8ad99d550bda94d187d"
   dependencies:
     whatwg-url "^5.0.0"
+
+node-firebird@^1.1.9:
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/node-firebird/-/node-firebird-1.1.9.tgz#0e6815b4e209812a4c85b71227e40e268bedeb8b"
+  dependencies:
+    big-integer "^1.6.51"
+    long "^5.2.3"
 
 nodemailer@^6.9.16:
   version "6.9.16"
