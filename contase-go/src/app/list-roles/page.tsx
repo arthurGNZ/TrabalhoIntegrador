@@ -5,14 +5,14 @@ import './style.css';
 import { Header } from '../components/header';
 
 type Permission = {
-  description: string;
+  sigla: string;
+  nome: string;
 };
 
 type Role = {
-  id: string;
-  name: string;
-  description: string;
-  permissions: Permission[];
+  sigla_cargo: string;
+  nome: string;
+  permissoes: Permission[];
 };
 
 const ListarRoles = () => {
@@ -25,37 +25,31 @@ const ListarRoles = () => {
   const handleDelete = (roleId: string) => {
     console.log(`Excluindo o papel com ID: ${roleId}`);
   };
-
+  async function loadRoles() {
+    try {
+      const accessToken = localStorage.getItem('access_token');
+      const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/role', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+          'ngrok-skip-browser-warning': 'true'  
+        },
+      });
+  
+      if (response.ok) {
+         console.log(response);
+         const data = await response.json();
+         setRoles(data.data);
+      } else {
+        console.error(`Erro ao carregar usuários: ${response.status} - ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Erro na requisição:', error);
+    }
+  }
   useEffect(() => {
-    setTimeout(() => {
-      const fetchedRoles: Role[] = [
-        {
-          id: 'admin',
-          name: 'Administrador',
-          description: 'Responsável por todas as permissões.',
-          permissions: [
-            { description: 'Gerenciar usuários, visualizar relatórios, configurar sistema.' },
-          ],
-        },
-        {
-          id: 'manager',
-          name: 'Gerente',
-          description: 'Gerencia operações e recursos.',
-          permissions: [
-            { description: 'Gerenciar operações, aprovar despesas, acessar relatórios financeiros.' },
-          ],
-        },
-        {
-          id: 'user',
-          name: 'Usuário',
-          description: 'Acesso limitado a funcionalidades básicas.',
-          permissions: [
-            { description: 'Visualizar dados próprios, realizar tarefas básicas.' },
-          ],
-        },
-      ];
-      setRoles(fetchedRoles);
-    }, 1000); 
+    loadRoles();
   }, []);
 
   return (
@@ -68,20 +62,19 @@ const ListarRoles = () => {
             <tr>
               <th></th>
               <th>Nome do Papel</th>
-              <th>Descrição</th>
+              <th>Sigla</th>
               <th>Ações</th>
             </tr>
           </thead>
           <tbody>
             {roles.map((role) => (
               <RoleRow
-                key={role.id}
-                id={role.id}
-                name={role.name}
-                description={role.description}
-                permissions={role.permissions}
-                onEdit={() => handleEdit(role.id)}
-                onDelete={() => handleDelete(role.id)}
+                key={role.sigla_cargo}
+                sigla_cargo={role.sigla_cargo}
+                nome={role.nome}
+                permissoes={role.permissoes}
+                onEdit={() => handleEdit(role.sigla_cargo)}
+                onDelete={() => handleDelete(role.sigla_cargo)}
               />
             ))}
           </tbody>

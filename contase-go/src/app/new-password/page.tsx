@@ -54,7 +54,7 @@ const NewPass = () => {
                     </Link>
                 </div>
                 <div className="login">
-                    <h3>Redefinição de Senha</h3>
+                    <h3>Digite aqui a nova senha que deseja utilizar</h3>
                     <form onSubmit={handleSubmit}>
                         <div className="input">
                             <label htmlFor="password">Senha</label>

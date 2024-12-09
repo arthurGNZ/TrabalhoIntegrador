@@ -5,13 +5,11 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { jwtDecode } from 'jwt-decode';
-
+import { Usuario } from '../interfaces/IUser';
 const LoginScreen = () => {
-        
-    function saveTokenAndExpirationTime (token: any) {
-        const expirationTime = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;//1 Mês
+    
+    function saveToken (token: any) {
         localStorage.setItem('access_token', token);
-        localStorage.setItem('expires_in', expirationTime.toString());
     }
 
     const router = useRouter();
@@ -36,13 +34,20 @@ const LoginScreen = () => {
             if (response.ok) {
                 const data = await response.json();
                 console.log('Login bem-sucedido:', data);
-                saveTokenAndExpirationTime(data.token);
+                saveToken(data.token);
                 const token = data.token;
+                console.log(data);
                 try {
-                    const decodedToken = jwtDecode(token);
-                    console.log('Dados do usuário:', decodedToken);
-                    //adicionar lógica para adm/trocar_senha/user
-                    router.push('/home-admin');
+                    if(data.alterar_senha){
+                        router.push('/new-password');
+                    }else{
+                        const decodedToken = jwtDecode <Usuario>(token);
+                        console.log(decodedToken);
+                        if(decodedToken.cargo==='ADS'){
+                            router.push('/home-admin');
+                        }else{
+                            router.push('/home-user');}
+                    }
                 } catch (error) {
                     setInformation('Erro ao processar os dados do token');
                     console.error(error);

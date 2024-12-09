@@ -10,17 +10,15 @@ type Permission = {
 };
 
 type User = {
-  id: string;
+  cpf: string;
   name: string;
   email: string;
   permissions: Permission[];  
 };
 
 const ListarUsuarios = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
   const [users, setUsers] = useState<User[]>([]);
-
   const togglePermissions = (userId: string) => {
     setExpandedUser(expandedUser === userId ? null : userId);
   };
@@ -33,26 +31,28 @@ const ListarUsuarios = () => {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${accessToken}`,
+          'ngrok-skip-browser-warning': 'true'  
         },
       });
   
       if (response.ok) {
          console.log(response);
-         
+         const data = await response.json();
+         setUsers(data.data);
       } else {
-        console.error(`Erro ao carregar usuários: ${response.status} - ${response.statusText}`);
+        console.error("Erro ao carregar usuários: ${response.status} - ${response.statusText}");
       }
     } catch (error) {
       console.error('Erro na requisição:', error);
     }
   }
   
-
   useEffect(() => {
-    setTimeout(() => {
+    loadUsers();
+    /*setTimeout(() => {
       const fetchedUsers: User[] = [
         {
-          id: "user1",
+          cpf: "user1",
           name: "João Silva",
           email: "joao@exemplo.com",
           permissions: [
@@ -61,7 +61,7 @@ const ListarUsuarios = () => {
           ],
         },
         {
-          id: "user2",
+          cpf: "user2",
           name: "Maria Oliveira",
           email: "maria@exemplo.com",
           permissions: [
@@ -70,9 +70,7 @@ const ListarUsuarios = () => {
           ],
         },
       ];
-      setUsers(fetchedUsers);
-    }, 1000); 
-    loadUsers();
+      setUsers(fetchedUsers);});*/
   }, []);
 
   return (
@@ -93,12 +91,12 @@ const ListarUsuarios = () => {
             <tbody>
               {users.map((user) => (
                 <UserRow
-                  key={user.id}
-                  userId={user.id}
+                  key={user.cpf}
+                  userId={user.cpf}
                   name={user.name}
                   email={user.email}
                   permissions={user.permissions}  
-                  isExpanded={expandedUser === user.id}
+                  isExpanded={expandedUser === user.cpf}
                   onTogglePermissions={togglePermissions}
                 />
               ))}
