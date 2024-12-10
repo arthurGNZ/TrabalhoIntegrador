@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import "./style.css"; 
 
-
 export const Header = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const cargo = localStorage.getItem('cargo');
+  const [cargo, setCargo] = useState<string | null>(null);
+
+  useEffect(() => {
+    setCargo(localStorage.getItem('cargo'));
+  }, []);
+
   const openNav = () => {
     setIsSidebarOpen(true);
   };
@@ -39,18 +43,17 @@ export const Header = () => {
           &times;
         </button>
         {
-          cargo==='ADS'?(
+          cargo === 'ADS' ? (
             <>
-            <Link href="/home-admin">Home</Link>
-            <Link href="/list-users">Ver Usuários</Link>
-            <Link href="/list-companies">Ver Empresas</Link>
-            <Link href="/list-roles">Ver Papéis</Link>
+              <Link href="/home-admin">Home</Link>
+              <Link href="/list-users">Ver Usuários</Link>
+              <Link href="/list-companies">Ver Empresas</Link>
+              <Link href="/list-roles">Ver Papéis</Link>
             </>
-          ):(
+          ) : (
             <Link href="/home-user">Home</Link>
           )
         }
-        
       </div>
     </>
   );
