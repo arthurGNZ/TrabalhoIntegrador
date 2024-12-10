@@ -1,4 +1,6 @@
-import type { Metadata } from "next";
+'use client';
+import { useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -13,16 +15,25 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-export const metadata: Metadata = {
-  title: "ContaseGO",
-  description: "Aplicação ContaseGO",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    // Pula o primeiro render
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    // Só recarrega nas mudanças subsequentes
+    window.location.reload();
+  }, [pathname]);
+
   return (
     <html lang="en">
       <body
