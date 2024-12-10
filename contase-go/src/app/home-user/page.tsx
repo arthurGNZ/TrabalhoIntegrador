@@ -4,7 +4,7 @@ import Link from 'next/link';
 import './style.css';
 import { Header } from '../components/header';
 import { useRouter } from 'next/navigation';
-
+import { jwtDecode } from 'jwt-decode';
 type Company = {
   cnpj: string;
   razao_social: string;
@@ -14,6 +14,19 @@ type Permission = {
   sigla: string;
   nome: string;
   descricao: string;
+};
+
+type DecodedToken = {
+  cpf: string;
+  nome: string;
+  email: string;
+  empresa: {
+    cnpj: string;
+    razao_social: string;
+    email: string;
+  };
+  cargo: string;
+  permissoes: Permission[];
 };
 
 const HomeUser = () => {
@@ -31,7 +44,7 @@ const HomeUser = () => {
 
   async function verifyToken() {
     const accessToken = localStorage.getItem('access_token');
-    const response = await fetch('https:8351-177-184-217-182.ngrok-free.app/auth/validate-token', {
+    const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/auth/validate-token', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`,
@@ -50,6 +63,12 @@ const HomeUser = () => {
   async function loadCompanies() {
     try {
       const accessToken = localStorage.getItem('access_token');
+      if (!accessToken) return router.push('/login');
+
+      // Decodificar o token para obter a empresa
+      const decodedToken: DecodedToken = jwtDecode(accessToken);
+      const tokenCompanyCnpj = decodedToken.empresa?.cnpj;
+
       const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/business/short', {
         method: 'GET',
         headers: {
@@ -62,11 +81,12 @@ const HomeUser = () => {
       if (response.ok) {
         const data = await response.json();
         setCompanies(data.data);
-        
+
         if (data.data.length > 0) {
-          const firstCompany = data.data[0].cnpj;
-          setSelectedCompany(firstCompany);
-          await verifyPermissions(firstCompany);
+          // Definir a empresa do token como padrão ou a primeira da lista
+          const defaultCompany = data.data.find((company: Company) => company.cnpj === tokenCompanyCnpj)?.cnpj || data.data[0].cnpj;
+          setSelectedCompany(defaultCompany);
+          await verifyPermissions(defaultCompany);
         }
       } else {
         console.log('Erro ao carregar empresas');
