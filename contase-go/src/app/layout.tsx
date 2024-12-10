@@ -24,13 +24,10 @@ export default function RootLayout({
   const isFirstRender = useRef(true);
 
   useEffect(() => {
-    // Pula o primeiro render
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
-
-    // Só recarrega nas mudanças subsequentes
     window.location.reload();
   }, [pathname]);
 

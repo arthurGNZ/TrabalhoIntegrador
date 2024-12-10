@@ -10,9 +10,16 @@ type Company = {
   razao_social: string;
 };
 
+type Permission = {
+  sigla: string;
+  nome: string;
+  descricao: string;
+};
+
 const HomeUser = () => {
   const [selectedCompany, setSelectedCompany] = useState(''); 
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [permissions, setPermissions] = useState<Permission[]>([]);
 
   const router = useRouter();
   function saveToken (token: any) {
@@ -21,7 +28,7 @@ const HomeUser = () => {
 
   async function verifyToken() {
     const accessToken = localStorage.getItem('access_token');
-    const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/auth/validate-token', {
+    const response = await fetch('https:8351-177-184-217-182.ngrok-free.app/auth/validate-token', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`,
@@ -56,7 +63,11 @@ const HomeUser = () => {
       if (response.ok) {
         const data = await response.json();
         setCompanies(data.data);
-        
+
+
+          setSelectedCompany(data.data[0].cnpj);
+          verifyPermissions(data.data[0].cnpj);
+
       } else {
         console.log('Erro ao carregar empresas');
       }
@@ -72,7 +83,7 @@ const HomeUser = () => {
   async function changeCompany(cnpj: string) {
     try {
       const accessToken = localStorage.getItem('access_token');
-      const data = { cnpj_empresa:cnpj };
+      const data = { cnpj_empresa: cnpj };
       const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/auth/change-company', {
         method: 'POST',
         headers: {
@@ -90,7 +101,30 @@ const HomeUser = () => {
         console.log('Erro ao trocar empresa');
       }
     } catch (error) {
-      console.log('Erro na requisição:', error);
+      console.log('Erro ao trocar empresa');
+    }
+  }
+
+  async function verifyPermissions(cnpj: string) {
+    try {
+      const accessToken = localStorage.getItem('access_token');
+      const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/other/permissions/me', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+          'ngrok-skip-browser-warning': 'true'
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setPermissions(data);
+      } else {
+        console.log('Erro ao verificar permissões');
+      }
+    } catch (error) {
+      console.log('Erro ao verificar permissões');
     }
   }
 
@@ -98,6 +132,21 @@ const HomeUser = () => {
     const newCnpj = event.target.value;
     setSelectedCompany(newCnpj);
     changeCompany(newCnpj);
+    verifyPermissions(newCnpj);
+  };
+
+  
+  const hasPermission = (sigla: string) => {
+    if (permissions.some(permission => permission.sigla === 'ADM')) {
+      return true;
+    }
+    if (permissions.some(permission => permission.sigla === 'DF') && sigla === 'DF') {
+      return true; 
+    }
+    if (permissions.some(permission => permission.sigla === 'DP') && sigla === 'DP') {
+      return true; 
+    }
+    return false; 
   };
 
   return (
@@ -114,16 +163,26 @@ const HomeUser = () => {
             value={selectedCompany}
             onChange={handleCompanyChange}
           >
-            {companies.map((company,index) => (
+            {companies.map((company, index) => (
               <option key={index} value={company.cnpj}>
                 {company.razao_social}
               </option>
             ))}
           </select>
           <h3>Deseja ver as estatísticas de:</h3>
-          <div className="buttons">
-            <Link href="departamento-fiscal.html" className="button">Departamento Fiscal</Link>
-            <Link href="departamento-pessoal.html" className="button">Departamento Pessoal</Link>
+          <div className="buttons">        
+            {permissions.some(permission => permission.sigla === 'ADM') && (
+              <>
+                <Link href="/dashboard-fiscal" className="button">Departamento Fiscal</Link>
+                <Link href="/dashboard-financeiro" className="button">Departamento Pessoal</Link>
+              </>
+            )}           
+            {permissions.some(permission => permission.sigla === 'DF') && !permissions.some(permission => permission.sigla === 'ADM') && (
+              <Link href="/dashboard-fiscal" className="button">Departamento Fiscal</Link>
+            )}
+            {permissions.some(permission => permission.sigla === 'DP') && !permissions.some(permission => permission.sigla === 'ADM') && (
+              <Link href="/dashboard-financeiro" className="button">Departamento Pessoal</Link>
+            )}
           </div>
         </div>
       </div>
@@ -132,3 +191,4 @@ const HomeUser = () => {
 };
 
 export default HomeUser;
+
