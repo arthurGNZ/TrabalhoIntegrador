@@ -4,9 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import "./style.css"; 
 
+
 export const Header = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+  //const cargo = localStorage.getItem('cargo');
   const openNav = () => {
     setIsSidebarOpen(true);
   };
@@ -14,10 +15,11 @@ export const Header = () => {
   const closeNav = () => {
     setIsSidebarOpen(false);
   };
-
+  
+  const cargo = 'ADS';
   return (
     <>
-      <div className="header">
+      <div className="header-container">
         <Link href="/" className="logo-styleDoLink">
           <img
             src="/logo-simbolo.png"
@@ -33,13 +35,23 @@ export const Header = () => {
           &#9776;
         </div>
       </div>
-      <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
-        <button className="closebtn" onClick={closeNav}>
+      <div className={`sidebar-header ${isSidebarOpen ? "open" : ""}`}>
+        <button className="closebtn-header" onClick={closeNav}>
           &times;
         </button>
-        <Link href="/list-users">Usuários</Link>
-        <Link href="/list-companies">Empresas</Link>
-        <Link href="/list-roles">Papéis</Link>
+        {
+          cargo==='ADS'?(
+            <>
+            <Link href="/home-admin">Home</Link>
+            <Link href="/list-users">Ver Usuários</Link>
+            <Link href="/list-companies">Ver Empresas</Link>
+            <Link href="/list-roles">Ver Papéis</Link>
+            </>
+          ):(
+            <Link href="/home-user">Home</Link>
+          )
+        }
+        
       </div>
     </>
   );

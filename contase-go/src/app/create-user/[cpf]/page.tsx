@@ -47,8 +47,30 @@ const CreateUser = () => {
   const [roles, setRoles] = useState<Role[]>([]);
   const [contratos, setContratos] = useState<Contract[]>([]);
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
+  async function verifyToken() {
+    const accessToken = localStorage.getItem('access_token');
+    const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/auth/validate-token', {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+            'ngrok-skip-browser-warning': 'true'  
+          }
+    });
+    if (response.ok) {
+      const verifyToken = await response.json();
+      if (!verifyToken.valid) {
+        router.push('/login');
+      }
+    }
+  }
+    
+
+  useEffect(() => {
+    verifyToken();
+  },[]);
 
   let userCpf: string | null = null;
+
 
   const formatarCPF = (input: string) => {
     let formattedCpf = input.replace(/\D/g, '');

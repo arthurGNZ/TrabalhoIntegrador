@@ -15,7 +15,30 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [isCnpjEditable, setIsCnpjEditable] = useState(false);
   
+  
   let companyCnpj: string | null = null
+  
+  async function verifyToken() {
+    const accessToken = localStorage.getItem('access_token');
+    const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/auth/validate-token', {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+            'ngrok-skip-browser-warning': 'true'  
+          }
+    });
+    if (response.ok) {
+      const verifyToken = await response.json();
+      if (!verifyToken.valid) {
+        router.push('/login');
+      }
+    }
+  }
+    
+
+  useEffect(() => {
+    verifyToken();
+  },[]);
 
   const formatarCNPJ = (input: string) => {
     let formattedCnpj = input.replace(/\D/g, ''); 
@@ -84,7 +107,7 @@ export default function Home() {
           setError('Erro ao carregar dados da empresa.');
         }
       } catch (error) {
-        console.error('Erro na requisição:', error);
+        console.log('Erro na requisição:', error);
         setError('Erro ao carregar dados da empresa.');
       } finally {
         
@@ -115,10 +138,10 @@ export default function Home() {
         console.log('Empresa criado com sucesso');
         router.push('/list-companies');
       } else {
-        console.error('Erro ao atualizar empresa');
+        console.log('Erro ao atualizar empresa');
       }
     } catch (error) {
-      console.error('Erro ao atualizar empresa');
+      console.log('Erro ao atualizar empresa');
     }
   }
   async function updateCompany(){
@@ -144,10 +167,10 @@ export default function Home() {
         console.log('Empresa editada com sucesso');
         router.push('/list-companies');
       } else {
-        console.error('Erro ao atualizar empresa');
+        console.log('Erro ao atualizar empresa');
       }
     } catch (error) {
-      console.error('Erro ao atualizar empresa');
+      console.log('Erro ao atualizar empresa');
     }
   }
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

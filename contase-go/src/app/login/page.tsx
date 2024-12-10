@@ -11,6 +11,12 @@ const LoginScreen = () => {
     function saveToken (token: any) {
         localStorage.setItem('access_token', token);
     }
+    function saveCpf (cpf: any) {
+        localStorage.setItem('cpf', cpf);
+    }
+    function saveCargo (cargo: any) {
+        localStorage.setItem('cargo', cargo);
+    }
 
     const router = useRouter();
     const [information, setInformation] = useState('');
@@ -34,13 +40,16 @@ const LoginScreen = () => {
             });
             if (response.ok) {
                 const data = await response.json();
-                saveToken(data.token);
                 const token = data.token;
+                const decodedToken = jwtDecode <Usuario>(token);
+                saveToken(token);
+                saveCpf(decodedToken.cpf);
+                saveCargo(decodedToken.cargo);
                 try {
                     if(data.alterar_senha){
                         router.push('/new-password');
                     }else{
-                        const decodedToken = jwtDecode <Usuario>(token);
+                        
                         if(decodedToken.cargo==='ADS'){
                             router.push('/home-admin');
                         }else{
@@ -48,7 +57,7 @@ const LoginScreen = () => {
                     }
                 } catch (error) {
                     setInformation('Erro ao processar os dados do token');
-                    console.error(error);
+                    console.log(error);
                 }
             } else {
                 const errorData = await response.json();
@@ -56,7 +65,7 @@ const LoginScreen = () => {
             }
         } catch (error) {
             setInformation('Erro ao fazer a requisição');
-            console.error('Erro ao fazer login:', error);
+            console.log('Erro ao fazer login:', error);
         }
     };
 
@@ -98,7 +107,7 @@ const LoginScreen = () => {
                                 required
                             />
                         </div>
-                        <button type="submit">Entrar</button>
+                        <button className="button-login" type="submit">Entrar</button>
                     </form>
                     {information && <p>{information}</p>}
                 </div>

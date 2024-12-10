@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import RoleRow from '../components/roleRow';
 import './style.css'; 
 import { Header } from '../components/header';
-
+import { useRouter } from 'next/navigation';
 type Permission = {
   sigla: string;
   nome: string;
@@ -17,7 +17,28 @@ type Role = {
 
 const ListarRoles = () => {
   const [roles, setRoles] = useState<Role[]>([]);
+  const router = useRouter();
+  async function verifyToken() {
+    const accessToken = localStorage.getItem('access_token');
+    const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/auth/validate-token', {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+            'ngrok-skip-browser-warning': 'true'  
+          }
+    });
+    if (response.ok) {
+      const verifyToken = await response.json();
+      if (!verifyToken.valid) {
+        router.push('/login');
+      }
+    }
+  }
+    
 
+  useEffect(() => {
+    verifyToken();
+  },[]);
 
   const handleDelete = async (roleSigla: string) => {
     const confirmed = window.confirm(`Tem certeza que deseja excluir este papel? Esta operação não pode ser desfeita.`);
@@ -36,11 +57,11 @@ const ListarRoles = () => {
           alert('Papel excluído com sucesso!');
           setRoles(roles.filter(role => role.sigla_cargo !== roleSigla));
         } else {
-          console.error(`Erro ao excluir o papel: ${response.status} - ${response.statusText}`);
+          console.log(`Erro ao excluir o papel: ${response.status} - ${response.statusText}`);
           alert('Erro ao excluir o papel.');
         }
       } catch (error) {
-        console.error('Erro na requisição DELETE:', error);
+        console.log('Erro na requisição DELETE:', error);
         alert('Erro ao excluir o papel.');
       }
     }
@@ -63,10 +84,10 @@ const ListarRoles = () => {
          const data = await response.json();
          setRoles(data.data);
       } else {
-        console.error(`Erro ao carregar usuários: ${response.status} - ${response.statusText}`);
+        console.log(`Erro ao carregar usuários: ${response.status} - ${response.statusText}`);
       }
     } catch (error) {
-      console.error('Erro na requisição:', error);
+      console.log('Erro na requisição:', error);
     }
   }
   useEffect(() => {

@@ -17,7 +17,27 @@ const CreateRole = () => {
   
 
   let sigla: string | null = null;
+  async function verifyToken() {
+    const accessToken = localStorage.getItem('access_token');
+    const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/auth/validate-token', {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+            'ngrok-skip-browser-warning': 'true'  
+          }
+    });
+    if (response.ok) {
+      const verifyToken = await response.json();
+      if (!verifyToken.valid) {
+        router.push('/login');
+      }
+    }
+  }
+    
 
+  useEffect(() => {
+    verifyToken();
+  },[]);
   async function loadRole() {
     const accessToken = localStorage.getItem('access_token');
     sigla = params?.replace('/create-role/', '') ? params.replace('/create-role/', '') : null;
@@ -92,7 +112,7 @@ const CreateRole = () => {
       }
     } catch (error) {
       setError('Ocorreu um erro ao criar o papel. Tente novamente.');
-      console.error('Erro:', error);
+      console.log('Erro:', error);
     } finally {
       setIsLoading(false);
     }
@@ -132,7 +152,7 @@ const CreateRole = () => {
       }
     } catch (error) {
       setError('Ocorreu um erro ao atualizar o papel. Tente novamente.');
-      console.error('Erro:', error);
+      console.log('Erro:', error);
     } finally {
       setIsLoading(false);
     }

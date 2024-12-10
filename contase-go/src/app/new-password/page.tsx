@@ -36,7 +36,7 @@ const NewPass = () => {
             }
         } catch (error) {
             setInformation('Erro ao fazer a requisição');
-            console.error('Erro ao fazer login:', error);
+            console.log('Erro ao fazer login:', error);
         }
     };
 

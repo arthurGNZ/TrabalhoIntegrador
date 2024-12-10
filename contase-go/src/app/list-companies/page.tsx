@@ -15,7 +15,6 @@ type Company = {
 };
 
 const ListCompanies = () => {
-  const router = useRouter();
   const [companies, setCompanies] = useState<Company[]>([]);
 
 async function loadCompanies() {
@@ -34,10 +33,10 @@ async function loadCompanies() {
          const data = await response.json();
          setCompanies(data.data);
       } else {
-        console.error(`Erro ao carregar empresa: ${response.status} - ${response.statusText}`);
+        console.log(`Erro ao carregar empresa: ${response.status} - ${response.statusText}`);
       }
     } catch (error) {
-      console.error('Erro na requisição:', error);
+      console.log('Erro na requisição:', error);
     }
   }
   useEffect(() => {
@@ -65,7 +64,7 @@ async function loadCompanies() {
           }
         }
       } catch (error) {
-        console.error('Erro na requisição DELETE:', error);
+        console.log('Erro na requisição DELETE:', error);
         
       }
     }
@@ -74,7 +73,28 @@ async function loadCompanies() {
   useEffect(() => {
     loadCompanies();
   }, []);
+  const router = useRouter();
+  async function verifyToken() {
+    const accessToken = localStorage.getItem('access_token');
+    const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/auth/validate-token', {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+            'ngrok-skip-browser-warning': 'true'  
+          }
+    });
+    if (response.ok) {
+      const verifyToken = await response.json();
+      if (!verifyToken.valid) {
+        router.push('/login');
+      }
+    }
+  }
+    
 
+  useEffect(() => {
+    verifyToken();
+  },[]);
   return (
     <div className="container">
       <Header/>
