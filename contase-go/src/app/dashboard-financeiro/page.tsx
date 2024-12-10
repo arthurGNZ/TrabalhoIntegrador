@@ -90,10 +90,10 @@ const DashboardFiscal = () => {
                 <LineChart
                   data={data}
                   margin={{
-                    top: 15,
-                    right: 20,
-                    left: 20,
-                    bottom: 15,
+                    top: 20,    // Aumentado para acomodar a legenda
+                    right: 30,  // Aumentado para valores não cortarem
+                    left: 35,   // Aumentado para acomodar os valores em Reais
+                    bottom: 20, // Aumentado para acomodar as datas
                   }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#666" />
@@ -101,13 +101,14 @@ const DashboardFiscal = () => {
                     dataKey="name" 
                     stroke="#fff"
                     tick={{ fill: '#fff', fontSize: 11 }}
-                    dy={5}
+                    dy={10}    // Ajustado para baixo
+                    height={60} // Altura mínima para o eixo X
                   />
                   <YAxis 
                     stroke="#fff"
                     tick={{ fill: '#fff', fontSize: 11 }}
                     tickFormatter={formatCurrency}
-                    dx={-5}
+                    width={80}  // Largura fixa para acomodar os valores
                   />
                   <Tooltip 
                     contentStyle={{ 
@@ -124,7 +125,7 @@ const DashboardFiscal = () => {
                     wrapperStyle={{ 
                       color: '#fff',
                       fontSize: '12px',
-                      paddingTop: '5px'
+                      paddingTop: '10px'
                     }}
                   />
                   <Line

@@ -4,14 +4,14 @@ class DashboardService {
     async getDepartmentData(empresaToken) {
         let db;
         try {
-            /*if (!empresaToken || !empresaToken.cnpj) {
+            if (!empresaToken || !empresaToken.cnpj) {
                 throw new Error('CNPJ não fornecido no token');
-            }*/
+            }
 
             db = await getFirebirdConnection();
-            //const cnpj = empresaToken.cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+        const cnpj = empresaToken.cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
 
-            const cnpj = '14.287.184/0001-27';
+        //    const cnpj = '14.287.184/0001-27';
 
             const query = `
                 WITH empresas AS (
@@ -109,14 +109,14 @@ class DashboardService {
     async getFiscalData(empresaToken) {
         let db;
         try {
-            /*if (!empresaToken || !empresaToken.cnpj) {
+            if (!empresaToken || !empresaToken.cnpj) {
                 throw new Error('CNPJ não fornecido no token');
-            }*/
+            }
 
-            db = await getFirebirdConnection();
-            //const cnpj = empresaToken.cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+             db = await getFirebirdConnection();
+            const cnpj = empresaToken.cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
             
-            const cnpj = '14.287.184/0001-27';
+            //const cnpj = '14.287.184/0001-27';
 
             const query = `
                 WITH empresas AS (
