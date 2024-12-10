@@ -173,15 +173,15 @@ const HomeUser = () => {
           <div className="buttons">        
             {permissions.some(permission => permission.sigla === 'ADM') && (
               <>
-                <Link href="/dashboard-fiscal" className="button">Departamento Fiscal</Link>
-                <Link href="/dashboard-financeiro" className="button">Departamento Pessoal</Link>
+                <Link href="/dashboard-financeiro" className="button">Departamento Fiscal</Link>
+                <Link href="/dashboard-pessoal" className="button">Departamento Pessoal</Link>
               </>
             )}           
             {permissions.some(permission => permission.sigla === 'DF') && !permissions.some(permission => permission.sigla === 'ADM') && (
-              <Link href="/dashboard-fiscal" className="button">Departamento Fiscal</Link>
+              <Link href="/dashboard-financeiro" className="button">Departamento Fiscal</Link>
             )}
             {permissions.some(permission => permission.sigla === 'DP') && !permissions.some(permission => permission.sigla === 'ADM') && (
-              <Link href="/dashboard-financeiro" className="button">Departamento Pessoal</Link>
+              <Link href="/dashboard-pessoal" className="button">Departamento Pessoal</Link>
             )}
           </div>
         </div>

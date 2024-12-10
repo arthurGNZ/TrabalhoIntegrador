@@ -2,6 +2,7 @@ const router = require('express').Router();
 const PersonController = require('../controllers/PersonController');
 const authMiddleware = require('../middlewares/AuthMiddleware');
 const permissionsGuard = require('../guards/permissionsGuard');
+
 router.get(
   '/:cpf',
   authMiddleware,

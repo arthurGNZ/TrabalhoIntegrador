@@ -1,0 +1,71 @@
+/* app/dashboard-fiscal/styles.css */
+.dashboard-container {
+    padding-top: 80px;
+    min-height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%);
+  }
+  
+  .dashboard-content {
+    width: 85%;
+    max-width: 1000px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .chart-header {
+    text-align: center;
+    color: white;
+    margin-bottom: 20px;
+  }
+  
+  .chart-header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+    color: #00c6ff;
+    font-weight: 600;
+  }
+  
+  .chart-header h2 {
+    font-size: 1.1rem;
+    color: #fff;
+    opacity: 0.9;
+    font-weight: 400;
+  }
+  
+  .chart-wrapper {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    height: 350px;
+  }
+  
+  @media (max-width: 768px) {
+    .dashboard-container {
+      padding-top: 70px;
+    }
+  
+    .dashboard-content {
+      width: 92%;
+      padding: 16px;
+    }
+  
+    .chart-header h1 {
+      font-size: 1.3rem;
+    }
+  
+    .chart-header h2 {
+      font-size: 1rem;
+    }
+  
+    .chart-wrapper {
+      padding: 12px;
+      height: 300px;
+    }
+  }

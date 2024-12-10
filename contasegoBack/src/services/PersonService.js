@@ -468,6 +468,8 @@ class PersonService {
     }
     return senha;
   }
+
+  
 }
 
 module.exports = new PersonService();
