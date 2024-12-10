@@ -15,6 +15,9 @@ const HomeUser = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
 
   const router = useRouter();
+  function saveToken (token: any) {
+    localStorage.setItem('access_token', token);
+  }
 
   async function verifyToken() {
     const accessToken = localStorage.getItem('access_token');
@@ -52,9 +55,7 @@ const HomeUser = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
         setCompanies(data.data);
-        console.log(companies);
         
       } else {
         console.log('Erro ao carregar empresas');
@@ -83,6 +84,7 @@ const HomeUser = () => {
 
       if (response.ok) {
         const dataResponse = await response.json();
+        saveToken(dataResponse.token);
         console.log('Empresa trocada com sucesso');
       } else {
         console.log('Erro ao trocar empresa');

@@ -110,6 +110,7 @@ const LoginScreen = () => {
                         <button className="button-login" type="submit">Entrar</button>
                     </form>
                     {information && <p>{information}</p>}
+                    <Link href='/rec-password'>Esqueci minha senha</Link>
                 </div>
             </div>
         </>
