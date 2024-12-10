@@ -7,7 +7,7 @@ import "./style.css";
 
 export const Header = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  //const cargo = localStorage.getItem('cargo');
+  const cargo = localStorage.getItem('cargo');
   const openNav = () => {
     setIsSidebarOpen(true);
   };
@@ -16,7 +16,6 @@ export const Header = () => {
     setIsSidebarOpen(false);
   };
   
-  const cargo = 'ADS';
   return (
     <>
       <div className="header-container">
