@@ -201,7 +201,7 @@ const CreateUser = () => {
     const accessToken = localStorage.getItem('access_token');
     try {
       const [companyResponse, roleResponse] = await Promise.all([
-        fetch('http://localhost:3001/business/short', {
+        fetch('https://8351-177-184-217-182.ngrok-free.app/business/short', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -209,7 +209,7 @@ const CreateUser = () => {
             'ngrok-skip-browser-warning': 'true'
           },
         }),
-        fetch('http://localhost:3001/role', {
+        fetch('https://8351-177-184-217-182.ngrok-free.app/role', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
