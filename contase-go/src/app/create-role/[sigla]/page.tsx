@@ -15,7 +15,6 @@ const CreateRole = () => {
   const [error, setError] = useState<string | null>(null);
   const [isSiglaEditable, setSiglaEditable] = useState(false);
   
-
   let sigla: string | null = null;
   async function verifyToken() {
     const accessToken = localStorage.getItem('access_token');
@@ -34,10 +33,10 @@ const CreateRole = () => {
     }
   }
     
-
   useEffect(() => {
     verifyToken();
   },[]);
+
   async function loadRole() {
     const accessToken = localStorage.getItem('access_token');
     sigla = params?.replace('/create-role/', '') ? params.replace('/create-role/', '') : null;
@@ -86,11 +85,11 @@ const CreateRole = () => {
     const role = {
       sigla_cargo: siglaCargo,
       nome: nomeCargo,
-      permissoes: permissoes.filter(p => selectedPermissoes.includes(p.sigla)).map(p => ({
-        sigla: p.sigla,
-        nome: p.nome
+      permissoes: selectedPermissoes.map(sigla => ({
+        sigla_permissao: sigla
       }))
     };
+    
     setIsLoading(true);
 
     try {
@@ -122,13 +121,11 @@ const CreateRole = () => {
     const role = {
       sigla_cargo: siglaCargo,
       nome: nomeCargo,
-      permissoes: permissoes
-      .filter(p => selectedPermissoes.includes(p.sigla))
-      .map(p => ({
-        sigla_permissao: p.sigla,  
+      permissoes: selectedPermissoes.map(sigla => ({
+        sigla_permissao: sigla
       }))
     };
-    console.log(role);
+    
     setIsLoading(true);
 
     try {
