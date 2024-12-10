@@ -10,18 +10,22 @@ const firebirdOptions = {
   retryConnectionInterval: 1000
 };
 
-const pool = Firebird.pool(5, firebirdOptions); // 5 conexões no pool
+const pool = Firebird.pool(5, firebirdOptions); 
 
-const getFirebirdConnection = () => {
+const getFirebirdConnection = (timeout = 10000) => {
   return new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error('Timeout ao obter conexão do pool'));
+    }, timeout);
+
     pool.get((err, db) => {
+      clearTimeout(timeoutId); 
       if (err) {
         console.error('Erro ao obter conexão do pool:', err);
         reject(err);
         return;
       }
 
-      // Wrapper para garantir que detach seja chamado
       const wrappedDb = {
         query: (sql, params) => {
           return new Promise((resolve, reject) => {
@@ -36,13 +40,19 @@ const getFirebirdConnection = () => {
           });
         },
         detach: () => {
-          return new Promise((resolve) => {
-            pool.destroy(db);
-            resolve();
+          return new Promise((resolve, reject) => {
+            db.detach((err) => {
+              if (err) {
+                console.error('Erro ao liberar conexão:', err);
+                reject(err);
+              } else {
+                resolve();
+              }
+            });
           });
         }
       };
-      
+
       resolve(wrappedDb);
     });
   });
@@ -59,4 +69,18 @@ const testFirebirdConnection = async () => {
   }
 };
 
-module.exports = { getFirebirdConnection, testFirebirdConnection };
+const closePool = () => {
+  return new Promise((resolve, reject) => {
+    pool.destroyAllNow((err) => {
+      if (err) {
+        console.error('Erro ao destruir todas as conexões no pool:', err);
+        reject(err);
+      } else {
+        console.log('Todas as conexões no pool foram destruídas');
+        resolve();
+      }
+    });
+  });
+};
+
+module.exports = { getFirebirdConnection, testFirebirdConnection, closePool };
