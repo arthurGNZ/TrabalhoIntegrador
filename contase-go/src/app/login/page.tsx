@@ -5,17 +5,40 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { jwtDecode } from 'jwt-decode';
-import { Usuario } from '../interfaces/IUser';
+
+interface Permissao {
+    sigla: string;
+    nome: string;
+}
+
+interface Usuario {
+    cpf: string;
+    nome: string;
+    email: string;
+    cargo: string;
+    permissoes: Permissao[];
+    empresa: {
+        cnpj: string;
+        razao_social: string;
+        email: string;
+    };
+}
+
 const LoginScreen = () => {
-    
-    function saveToken (token: any) {
+    function saveToken(token: string) {
         localStorage.setItem('access_token', token);
     }
-    function saveCpf (cpf: any) {
+
+    function saveCpf(cpf: string) {
         localStorage.setItem('cpf', cpf);
     }
-    function saveCargo (cargo: any) {
+
+    function saveCargo(cargo: string) {
         localStorage.setItem('cargo', cargo);
+    }
+
+    function savePermissoes(permissoes: Permissao[]) {
+        localStorage.setItem('permissoes', JSON.stringify(permissoes));
     }
 
     const router = useRouter();
@@ -41,19 +64,27 @@ const LoginScreen = () => {
             if (response.ok) {
                 const data = await response.json();
                 const token = data.token;
-                const decodedToken = jwtDecode <Usuario>(token);
+                const decodedToken = jwtDecode<Usuario>(token);
+                
+                // Salvando os dados no localStorage
                 saveToken(token);
                 saveCpf(decodedToken.cpf);
                 saveCargo(decodedToken.cargo);
+                savePermissoes(decodedToken.permissoes);
+                
                 try {
                     if(data.alterar_senha){
                         router.push('/new-password');
-                    }else{
+                    } else {
+                        const hasAdminPermission = decodedToken.permissoes.some(
+                            perm => perm.sigla === 'ADM'
+                        );
                         
-                        if(decodedToken.cargo==='ADS'){
+                        if(hasAdminPermission){
                             router.push('/home-admin');
-                        }else{
-                            router.push('/home-user');}
+                        } else {
+                            router.push('/home-user');
+                        }
                     }
                 } catch (error) {
                     setInformation('Erro ao processar os dados do token');
@@ -68,7 +99,6 @@ const LoginScreen = () => {
             console.log('Erro ao fazer login:', error);
         }
     };
-
 
     return (
         <>

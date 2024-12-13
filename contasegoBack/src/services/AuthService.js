@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const { Sequelize, Op } = require('sequelize');
 const { Pessoa, Empresa, Contrato, CargoPermissao, Permissao } = require('../models');
 const EmailService = require('./emailService');
 
@@ -50,49 +51,80 @@ class AuthService {
       }
     }
 
-    const contrato = await Contrato.findOne({
+    // Primeiro verifica se o usuário tem a permissão ADM em algum cargo
+    const temPermissaoAdmin = await CargoPermissao.findOne({
       where: { 
-        cpf_pessoa: pessoa.cpf,
-        cnpj_empresa: targetCnpj
-      },
-      include: [{
-        model: Empresa,
-        attributes: ['razao_social', 'email']
-      }]
+        sigla_permissao: 'ADM',
+        sigla_cargo: {
+          [Op.in]: Sequelize.literal(`(SELECT sigla_cargo FROM contrato WHERE cpf_pessoa = '${pessoa.cpf}')`)
+        }
+      }
     });
 
-    if (!contrato) {
-      throw new Error('Sem acesso a esta empresa');
+    let contrato;
+    let empresa;
+
+    if (temPermissaoAdmin) {
+      // Se tem permissão ADM, pode acessar qualquer empresa
+      empresa = await Empresa.findOne({
+        where: { cnpj: targetCnpj },
+        attributes: ['cnpj', 'razao_social', 'email']
+      });
+      
+      if (!empresa) {
+        throw new Error('Empresa não encontrada');
+      }
+
+      // Pega qualquer contrato do usuário para manter o cargo original
+      const qualquerContrato = await Contrato.findOne({
+        where: { cpf_pessoa: pessoa.cpf }
+      });
+
+      contrato = {
+        cnpj_empresa: empresa.cnpj,
+        sigla_cargo: qualquerContrato.sigla_cargo,
+        Empresa: empresa
+      };
+    } else {
+      contrato = await Contrato.findOne({
+        where: { 
+          cpf_pessoa: pessoa.cpf,
+          cnpj_empresa: targetCnpj
+        },
+        include: [{
+          model: Empresa,
+          attributes: ['razao_social', 'email']
+        }]
+      });
+
+      if (!contrato) {
+        throw new Error('Sem acesso a esta empresa');
+      }
     }
 
-    const permissoes = await CargoPermissao.findAll({
-      where: { sigla_cargo: contrato.sigla_cargo },
-      include: [{
-        model: Permissao,
+    let todasPermissoes;
+    if (temPermissaoAdmin) {
+      // Se tem permissão ADM, busca todas as permissões do banco
+      todasPermissoes = await Permissao.findAll({
         attributes: ['sigla_permissao', 'nome']
-      }]
-    });
-
-    const isAdminAnywhere = await Contrato.findOne({
-      where: { 
-        cpf_pessoa: pessoa.cpf,
-        sigla_cargo: 'ADM'
-      }
-    });
-
-    let todasPermissoes = permissoes.map(p => ({
-      sigla: p.Permissao.sigla_permissao,
-      nome: p.Permissao.nome
-    }));
-
-    if (isAdminAnywhere) {
-      const admJaExiste = todasPermissoes.some(p => p.sigla === 'ADM');
-      if (!admJaExiste) {
-        todasPermissoes.push({
-          sigla: 'ADM',
-          nome: 'Administrador'
-        });
-      }
+      });
+      todasPermissoes = todasPermissoes.map(p => ({
+        sigla: p.sigla_permissao,
+        nome: p.nome
+      }));
+    } else {
+      // Se não tem permissão ADM, busca apenas as permissões do cargo atual
+      const permissoes = await CargoPermissao.findAll({
+        where: { sigla_cargo: contrato.sigla_cargo },
+        include: [{
+          model: Permissao,
+          attributes: ['sigla_permissao', 'nome']
+        }]
+      });
+      todasPermissoes = permissoes.map(p => ({
+        sigla: p.Permissao.sigla_permissao,
+        nome: p.Permissao.nome
+      }));
     }
 
     await Pessoa.update({
@@ -175,49 +207,80 @@ class AuthService {
   }
 
   async changeCompany(cpf, cnpjEmpresa) {
-    const contrato = await Contrato.findOne({
+    // Primeiro verifica se o usuário tem a permissão ADM em algum cargo
+    const temPermissaoAdmin = await CargoPermissao.findOne({
       where: { 
-        cpf_pessoa: cpf,
-        cnpj_empresa: cnpjEmpresa
-      },
-      include: [{
-        model: Empresa,
-        attributes: ['razao_social', 'email']
-      }]
+        sigla_permissao: 'ADM',
+        sigla_cargo: {
+          [Op.in]: Sequelize.literal(`(SELECT sigla_cargo FROM contrato WHERE cpf_pessoa = '${cpf}')`)
+        }
+      }
     });
 
-    if (!contrato) {
-      throw new Error('Sem acesso a esta empresa');
+    let contrato;
+    let empresa;
+
+    if (temPermissaoAdmin) {
+      // Se tem permissão ADM, pode acessar qualquer empresa
+      empresa = await Empresa.findOne({
+        where: { cnpj: cnpjEmpresa },
+        attributes: ['cnpj', 'razao_social', 'email']
+      });
+      
+      if (!empresa) {
+        throw new Error('Empresa não encontrada');
+      }
+
+      // Pega qualquer contrato do usuário para manter o cargo original
+      const qualquerContrato = await Contrato.findOne({
+        where: { cpf_pessoa: cpf }
+      });
+
+      contrato = {
+        cnpj_empresa: empresa.cnpj,
+        sigla_cargo: qualquerContrato.sigla_cargo,
+        Empresa: empresa
+      };
+    } else {
+      contrato = await Contrato.findOne({
+        where: { 
+          cpf_pessoa: cpf,
+          cnpj_empresa: cnpjEmpresa
+        },
+        include: [{
+          model: Empresa,
+          attributes: ['razao_social', 'email']
+        }]
+      });
+
+      if (!contrato) {
+        throw new Error('Sem acesso a esta empresa');
+      }
     }
 
-    const permissoes = await CargoPermissao.findAll({
-      where: { sigla_cargo: contrato.sigla_cargo },
-      include: [{
-        model: Permissao,
+    let todasPermissoes;
+    if (temPermissaoAdmin) {
+      // Se tem permissão ADM, busca todas as permissões do banco
+      todasPermissoes = await Permissao.findAll({
         attributes: ['sigla_permissao', 'nome']
-      }]
-    });
-
-    const isAdminAnywhere = await Contrato.findOne({
-      where: { 
-        cpf_pessoa: cpf,
-        sigla_cargo: 'ADM'
-      }
-    });
-
-    let todasPermissoes = permissoes.map(p => ({
-      sigla: p.Permissao.sigla_permissao,
-      nome: p.Permissao.nome
-    }));
-
-    if (isAdminAnywhere) {
-      const admJaExiste = todasPermissoes.some(p => p.sigla === 'ADM');
-      if (!admJaExiste) {
-        todasPermissoes.push({
-          sigla: 'ADM',
-          nome: 'Administrador'
-        });
-      }
+      });
+      todasPermissoes = todasPermissoes.map(p => ({
+        sigla: p.sigla_permissao,
+        nome: p.nome
+      }));
+    } else {
+      // Se não tem permissão ADM, busca apenas as permissões do cargo atual
+      const permissoes = await CargoPermissao.findAll({
+        where: { sigla_cargo: contrato.sigla_cargo },
+        include: [{
+          model: Permissao,
+          attributes: ['sigla_permissao', 'nome']
+        }]
+      });
+      todasPermissoes = permissoes.map(p => ({
+        sigla: p.Permissao.sigla_permissao,
+        nome: p.Permissao.nome
+      }));
     }
 
     await Pessoa.update({

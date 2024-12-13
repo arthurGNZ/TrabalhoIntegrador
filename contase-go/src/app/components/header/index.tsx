@@ -4,13 +4,24 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import "./style.css"; 
 
+interface Permissao {
+  sigla: string;
+  nome: string;
+}
+
 export const Header = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [cargo, setCargo] = useState<string | null>(null);
+  const [permissoes, setPermissoes] = useState<Permissao[]>([]);
 
   useEffect(() => {
-    setCargo(localStorage.getItem('cargo'));
+    const permissoesStr = localStorage.getItem('permissoes');
+    if (permissoesStr) {
+      const perms = JSON.parse(permissoesStr) as Permissao[];
+      setPermissoes(perms);
+    }
   }, []);
+
+  const hasAdminPermission = permissoes.some(perm => perm.sigla === 'ADM');
 
   const openNav = () => {
     setIsSidebarOpen(true);
@@ -43,9 +54,10 @@ export const Header = () => {
           &times;
         </button>
         {
-          cargo === 'ADS' ? (
+          hasAdminPermission ? (
             <>
-              <Link href="/home-admin">Home</Link>
+              <Link href="/home-admin">Home Administrador</Link>
+              <Link href="/home-user">Home Usuario</Link>
               <Link href="/list-users">Ver Usuários</Link>
               <Link href="/list-companies">Ver Empresas</Link>
               <Link href="/list-roles">Ver Papéis</Link>
