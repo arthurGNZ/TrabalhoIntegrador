@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Header } from "../components/header";
 import {
@@ -23,6 +21,10 @@ interface FaturamentoItem {
 interface ApiResponse {
   faturamento_bruto: FaturamentoItem[];
   faturamento_liquido: FaturamentoItem[];
+  totals: {
+    faturamento_bruto: number;
+    faturamento_liquido: number;
+  };
 }
 
 interface ChartData {
@@ -33,6 +35,15 @@ interface ChartData {
 
 const DashboardFiscal = () => {
   const [data, setData] = useState<ChartData[] | null>(null);
+  const [totals, setTotals] = useState<ApiResponse['totals'] | null>(null);
+
+  const formatCurrency = (value: number | string): string => {
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(numValue);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,6 +69,7 @@ const DashboardFiscal = () => {
           })).reverse();
           
           setData(formattedData);
+          setTotals(jsonData.totals);
         }
       } catch (error) {
         console.error("Erro ao buscar dados:", error);
@@ -67,14 +79,6 @@ const DashboardFiscal = () => {
     fetchData();
   }, []);
 
-  const formatCurrency = (value: number | string): string => {
-    const numValue = typeof value === 'string' ? parseFloat(value) : value;
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(numValue);
-  };
-
   return (
     <>
       <Header />
@@ -82,6 +86,25 @@ const DashboardFiscal = () => {
         <div className="dashboard-content">
           <div className="chart-header">
             <h1>Dashboard Fiscal</h1>
+            {totals && (
+              <div className="totals-container bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+                <h2 className="text-xl font-semibold mb-4 text-white">Total últimos 12 meses</h2>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 bg-gray-700 rounded-lg">
+                    <h3 className="text-sm text-gray-300 mb-2">Faturamento Bruto</h3>
+                    <p className="text-lg font-bold text-[#00c6ff]">
+                      {formatCurrency(totals.faturamento_bruto)}
+                    </p>
+                  </div>
+                  <div className="p-4 bg-gray-700 rounded-lg">
+                    <h3 className="text-sm text-gray-300 mb-2">Faturamento Líquido</h3>
+                    <p className="text-lg font-bold text-[#0072ff]">
+                      {formatCurrency(totals.faturamento_liquido)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
             <h2>Faturamento Mensal</h2>
           </div>
           <div className="chart-wrapper">
@@ -90,10 +113,10 @@ const DashboardFiscal = () => {
                 <LineChart
                   data={data}
                   margin={{
-                    top: 20,    // Aumentado para acomodar a legenda
-                    right: 30,  // Aumentado para valores não cortarem
-                    left: 35,   // Aumentado para acomodar os valores em Reais
-                    bottom: 20, // Aumentado para acomodar as datas
+                    top: 20,
+                    right: 30,
+                    left: 35,
+                    bottom: 20,
                   }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#666" />
@@ -101,14 +124,14 @@ const DashboardFiscal = () => {
                     dataKey="name" 
                     stroke="#fff"
                     tick={{ fill: '#fff', fontSize: 11 }}
-                    dy={10}    // Ajustado para baixo
-                    height={60} // Altura mínima para o eixo X
+                    dy={10}
+                    height={60}
                   />
                   <YAxis 
                     stroke="#fff"
                     tick={{ fill: '#fff', fontSize: 11 }}
                     tickFormatter={formatCurrency}
-                    width={80}  // Largura fixa para acomodar os valores
+                    width={80}
                   />
                   <Tooltip 
                     contentStyle={{ 

@@ -113,11 +113,9 @@ class DashboardService {
                 throw new Error('CNPJ não fornecido no token');
             }
 
-             db = await getFirebirdConnection();
+            db = await getFirebirdConnection();
             const cnpj = empresaToken.cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
             
-            //const cnpj = '14.287.184/0001-27';
-
             const query = `
                 WITH empresas AS (
                     SELECT DISTINCT 
@@ -183,19 +181,27 @@ class DashboardService {
 
             const faturamento_bruto = [];
             const faturamento_liquido = [];
+            let total_bruto = 0;
+            let total_liquido = 0;
 
             results.forEach(row => {
                 if (row.MES && row.ANO) {
+                    const valorBruto = parseFloat(row.FATURAMENTO_BRUTO || 0);
+                    const valorLiquido = parseFloat(row.FATURAMENTO_LIQUIDO || 0);
+                    
+                    total_bruto += valorBruto;
+                    total_liquido += valorLiquido;
+
                     faturamento_bruto.push({
                         mes: parseInt(row.MES),
                         ano: parseInt(row.ANO),
-                        valor: parseFloat(row.FATURAMENTO_BRUTO || 0)
+                        valor: valorBruto
                     });
 
                     faturamento_liquido.push({
                         mes: parseInt(row.MES),
                         ano: parseInt(row.ANO),
-                        valor: parseFloat(row.FATURAMENTO_LIQUIDO || 0)
+                        valor: valorLiquido
                     });
                 }
             });
@@ -207,7 +213,11 @@ class DashboardService {
 
             return {
                 faturamento_bruto: faturamento_bruto.sort(sortByDate),
-                faturamento_liquido: faturamento_liquido.sort(sortByDate)
+                faturamento_liquido: faturamento_liquido.sort(sortByDate),
+                totals: {
+                    faturamento_bruto: total_bruto,
+                    faturamento_liquido: total_liquido
+                }
             };
 
         } catch (error) {
@@ -220,5 +230,6 @@ class DashboardService {
         }
     }
 }
+
 
 module.exports = new DashboardService();
