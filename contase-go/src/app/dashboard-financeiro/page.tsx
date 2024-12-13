@@ -1,5 +1,8 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { Header } from "../components/header";
+import { DollarSign, TrendingUp } from 'lucide-react';
 import {
   LineChart,
   Line,
@@ -86,25 +89,54 @@ const DashboardFiscal = () => {
         <div className="dashboard-content">
           <div className="chart-header">
             <h1>Dashboard Fiscal</h1>
+            
             {totals && (
-              <div className="totals-container bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
-                <h2 className="text-xl font-semibold mb-4 text-white">Total últimos 12 meses</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 bg-gray-700 rounded-lg">
-                    <h3 className="text-sm text-gray-300 mb-2">Faturamento Bruto</h3>
-                    <p className="text-lg font-bold text-[#00c6ff]">
-                      {formatCurrency(totals.faturamento_bruto)}
-                    </p>
+              <div className="w-full mb-6">
+                <h2 className="text-lg font-semibold text-white mb-4 text-center">
+                  Faturamento Total - Últimos 12 Meses
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-2">
+                  {/* Card Faturamento Bruto */}
+                  <div className="relative overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-4 shadow-lg transform hover:scale-102 transition-transform duration-200">
+                    <div className="absolute top-0 right-0 w-20 h-20 transform translate-x-6 -translate-y-6">
+                      <div className="absolute inset-0 bg-white opacity-10 rounded-full"></div>
+                    </div>
+                    <div className="relative z-10">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <div className="bg-white/20 rounded-lg p-1.5">
+                          <DollarSign className="h-4 w-4 text-white" />
+                        </div>
+                        <h3 className="text-base font-medium text-white">Faturamento Bruto</h3>
+                      </div>
+                      <p className="text-2xl font-bold text-white mb-1">
+                        {formatCurrency(totals.faturamento_bruto)}
+                      </p>
+                      <p className="text-blue-100 text-xs">Total acumulado em 12 meses</p>
+                    </div>
                   </div>
-                  <div className="p-4 bg-gray-700 rounded-lg">
-                    <h3 className="text-sm text-gray-300 mb-2">Faturamento Líquido</h3>
-                    <p className="text-lg font-bold text-[#0072ff]">
-                      {formatCurrency(totals.faturamento_liquido)}
-                    </p>
+
+                  {/* Card Faturamento Líquido */}
+                  <div className="relative overflow-hidden bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl p-4 shadow-lg transform hover:scale-102 transition-transform duration-200">
+                    <div className="absolute top-0 right-0 w-20 h-20 transform translate-x-6 -translate-y-6">
+                      <div className="absolute inset-0 bg-white opacity-10 rounded-full"></div>
+                    </div>
+                    <div className="relative z-10">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <div className="bg-white/20 rounded-lg p-1.5">
+                          <TrendingUp className="h-4 w-4 text-white" />
+                        </div>
+                        <h3 className="text-base font-medium text-white">Faturamento Líquido</h3>
+                      </div>
+                      <p className="text-2xl font-bold text-white mb-1">
+                        {formatCurrency(totals.faturamento_liquido)}
+                      </p>
+                      <p className="text-indigo-100 text-xs">Total acumulado em 12 meses</p>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
+
             <h2>Faturamento Mensal</h2>
           </div>
           <div className="chart-wrapper">
