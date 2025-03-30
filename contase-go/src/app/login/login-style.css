@@ -1,0 +1,533 @@
+/* Importação de fontes */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap');
+
+/* Variáveis para cores e estilos consistentes */
+:root {
+  --primary: #0055ff;
+  --primary-light: #4d85ff;
+  --primary-dark: #0044cc;
+  --secondary: #2e3b4e;
+  --text-light: #ffffff;
+  --text-dark: #121212;
+  --background-overlay: rgba(10, 23, 55, 0.85);
+  --card-background: rgba(255, 255, 255, 0.95);
+  --input-background: #f8f9fa;
+  --input-border: #e9ecef;
+  --shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --gradient: linear-gradient(135deg, #0055ff, #5533ff);
+  --error: #ff3366;
+  --success: #00c875;
+}
+
+/* Reset e estilos base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: url('/background.jpg') no-repeat center center fixed;
+  background-size: cover;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+body.loaded {
+  opacity: 1;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--background-overlay);
+  z-index: -1;
+}
+
+/* Wrapper para centralizar o card de login */
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+/* Card principal de login */
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background-color: var(--card-background);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transform: translateY(30px);
+  opacity: 0;
+  animation: slideUp 0.8s ease forwards 0.3s;
+}
+
+.card-content {
+  padding: 2.5rem;
+}
+
+/* Logo e título */
+.logo-link {
+  text-decoration: none;
+  display: block;
+  margin-bottom: 2rem;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.logo-image {
+  animation: logoFadeIn 1.2s ease forwards;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--primary);
+  letter-spacing: 1px;
+  transform: translateX(-20px);
+  opacity: 0;
+  animation: slideInRight 0.8s ease forwards 0.4s;
+}
+
+.logo-subtitle {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--secondary);
+  letter-spacing: 1px;
+  transform: translateX(-20px);
+  opacity: 0;
+  animation: slideInRight 0.8s ease forwards 0.6s;
+}
+
+/* Formulário de login */
+.login-form-container {
+  margin-top: 1rem;
+}
+
+.login-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.5rem;
+  color: var(--secondary);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 600;
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards 0.7s;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.form-group {
+  position: relative;
+  opacity: 0;
+  animation: fadeIn 0.6s ease forwards 0.8s;
+}
+
+.form-group:nth-child(2) {
+  animation-delay: 1s;
+}
+
+.input-icon-wrapper {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary);
+  font-size: 1rem;
+  z-index: 2;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 0.9rem 1rem 0.9rem 2.8rem;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+  background-color: var(--input-background);
+  color: var(--text-dark);
+  transition: var(--transition);
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 85, 255, 0.15);
+}
+
+.login-form input::placeholder {
+  color: #adb5bd;
+}
+
+/* Botão de login */
+.login-button {
+  margin-top: 0.8rem;
+  padding: 0.9rem;
+  background: var(--gradient);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 85, 255, 0.3);
+  opacity: 0;
+  animation: fadeIn 0.6s ease forwards 1.2s;
+}
+
+.login-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: all 0.6s ease;
+}
+
+.login-button:hover::before {
+  left: 100%;
+}
+
+.login-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 85, 255, 0.4);
+}
+
+.button-icon {
+  transition: transform 0.3s ease;
+}
+
+.login-button:hover .button-icon {
+  transform: translateX(5px);
+}
+
+/* Estado de loading do botão */
+.login-button.loading {
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #3a7bd5, #3a6073);
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Mensagens de erro/informação */
+.message {
+  padding: 0.8rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.message.error {
+  background-color: rgba(255, 51, 102, 0.1);
+  color: var(--error);
+  border: 1px solid rgba(255, 51, 102, 0.2);
+}
+
+.message.info {
+  background-color: rgba(0, 85, 255, 0.1);
+  color: var(--primary);
+  border: 1px solid rgba(0, 85, 255, 0.2);
+}
+
+/* Link para recuperação de senha */
+.forgot-password {
+  margin-top: 1.5rem;
+  text-align: center;
+  opacity: 0;
+  animation: fadeIn 0.6s ease forwards 1.4s;
+}
+
+.forgot-link {
+  color: var(--primary);
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: var(--transition);
+  position: relative;
+}
+
+.forgot-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--primary);
+  transition: var(--transition);
+}
+
+.forgot-link:hover::after {
+  width: 100%;
+}
+
+/* Link para voltar ao site */
+.back-to-site {
+  margin-top: 2rem;
+  text-align: center;
+  opacity: 0;
+  animation: fadeIn 0.6s ease forwards 1.6s;
+}
+
+.back-link {
+  color: var(--secondary);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.back-link:hover {
+  color: var(--primary);
+}
+
+/* Animações */
+@keyframes slideUp {
+  0% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes logoFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  .card-content {
+    padding: 2rem 1.5rem;
+  }
+  
+  .login-title {
+    font-size: 1.3rem;
+  }
+  
+  .logo-container {
+    gap: 0.7rem;
+  }
+  
+  .logo-title {
+    font-size: 1.3rem;
+  }
+  
+  .logo-subtitle {
+    font-size: 0.65rem;
+  }
+}
+
+@media (max-height: 700px) {
+  .login-wrapper {
+    align-items: flex-start;
+    padding-top: 3rem;
+  }
+}
+
+/* Modo escuro (opcional) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --input-background: #2a2d3e;
+    --input-border: #3e4253;
+    --card-background: rgba(37, 42, 64, 0.97);
+  }
+  
+  .login-form input {
+    color: var(--text-light);
+  }
+  
+  .login-form input::placeholder {
+    color: #8a94a6;
+  }
+  
+  .logo-title {
+    color: #4d85ff;
+  }
+  
+  .logo-subtitle,
+  .login-title {
+    color: #e9ecef;
+  }
+  
+  .back-link {
+    color: #adb5bd;
+  }
+}
+/* Adicione estas correções ao seu arquivo login-style.css */
+
+/* Garante que a página de login ocupe toda a altura da tela sem scroll */
+.login-wrapper {
+    min-height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Classe para páginas sem scroll */
+  body.no-scroll {
+    overflow: hidden;
+    height: 100vh;
+    max-height: 100vh;
+  }
+  
+  /* Ajusta o card de login para garantir que fique dentro da viewport sem scroll */
+  .login-card {
+    height: auto;
+    max-height: 90vh;
+    overflow: auto; /* Permite scroll interno se o conteúdo for muito grande */
+  }
+  
+  /* Reset de animações para garantir que funcione na primeira carga */
+  body {
+    transition: opacity 0.3s ease;
+    opacity: 1; /* Começa visível por padrão */
+  }
+  
+  /* Ajuste para mobile para evitar problemas de layout */
+  @media (max-width: 768px) {
+    .login-card {
+      width: 90%;
+      max-height: 85vh;
+    }
+  }
+  /* Adicione estas correções ao seu arquivo login-style.css */
+
+/* Impede o scroll no card de login */
+.login-card {
+    overflow: hidden !important; /* Forçar remoção do scroll */
+    height: auto;
+    max-height: 90vh;
+  }
+  
+  /* Garante que todo o conteúdo do card esteja visível sem scroll */
+  .card-content {
+    height: auto;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Ajustar o formulário e conteúdo interno para caber sem scroll */
+  .login-form-container {
+    height: auto;
+    overflow: visible;
+  }
+  
+  .login-form {
+    height: auto;
+    overflow: visible;
+  }
+  
+  /* Remover qualquer altura fixa que possa estar causando o scroll */
+  .form-group {
+    height: auto;
+    margin-bottom: 15px; /* Espaçamento adequado */
+  }
+  
+  /* Ajustes responsivos */
+  @media (max-height: 700px) {
+    /* Para telas menores, reduzir espaçamentos */
+    .login-card {
+      padding: 15px;
+    }
+    
+    .form-group {
+      margin-bottom: 10px;
+    }
+    
+    .login-title {
+      margin-bottom: 15px;
+    }
+  }

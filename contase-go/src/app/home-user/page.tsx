@@ -44,7 +44,7 @@ const HomeUser = () => {
 
   async function verifyToken() {
     const accessToken = localStorage.getItem('access_token');
-    const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/auth/validate-token', {
+    const response = await fetch('http://localhost:3001/auth/validate-token', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`,
@@ -69,7 +69,7 @@ const HomeUser = () => {
       const decodedToken: DecodedToken = jwtDecode(accessToken);
       const tokenCompanyCnpj = decodedToken.empresa?.cnpj;
 
-      const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/business/short', {
+      const response = await fetch('http://localhost:3001/business/short', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ const HomeUser = () => {
       setIsChangingCompany(true);
       const accessToken = localStorage.getItem('access_token');
       const data = { cnpj_empresa: cnpj };
-      const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/auth/change-company', {
+      const response = await fetch('http://localhost:3001/auth/change-company', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -134,7 +134,7 @@ const HomeUser = () => {
   async function verifyPermissions(cnpj: string) {
     try {
       const accessToken = localStorage.getItem('access_token');
-      const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/other/permissions/me', {
+      const response = await fetch('http://localhost:3001/other/permissions/me', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

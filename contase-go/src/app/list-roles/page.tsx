@@ -20,7 +20,7 @@ const ListarRoles = () => {
   const router = useRouter();
   async function verifyToken() {
     const accessToken = localStorage.getItem('access_token');
-    const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/auth/validate-token', {
+    const response = await fetch('http://localhost:3001/auth/validate-token', {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`,
@@ -45,7 +45,7 @@ const ListarRoles = () => {
     if (confirmed) {
       try {
         const accessToken = localStorage.getItem('access_token');
-        const response = await fetch(`https://8351-177-184-217-182.ngrok-free.app/role/${roleSigla}`, {
+        const response = await fetch(`http://localhost:3001/role/${roleSigla}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ const ListarRoles = () => {
   async function loadRoles() {
     try {
       const accessToken = localStorage.getItem('access_token');
-      const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/role', {
+      const response = await fetch('http://localhost:3001/role', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

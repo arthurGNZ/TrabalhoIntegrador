@@ -18,7 +18,7 @@ const CreateRole = () => {
   let sigla: string | null = null;
   async function verifyToken() {
     const accessToken = localStorage.getItem('access_token');
-    const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/auth/validate-token', {
+    const response = await fetch('http://localhost:3001/auth/validate-token', {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`,
@@ -41,7 +41,7 @@ const CreateRole = () => {
     const accessToken = localStorage.getItem('access_token');
     sigla = params?.replace('/create-role/', '') ? params.replace('/create-role/', '') : null;
     if (sigla && sigla !== 'new') {
-      const response = await fetch(`https://8351-177-184-217-182.ngrok-free.app/role/${sigla}`, {
+      const response = await fetch(`http://localhost:3001/role/${sigla}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ const CreateRole = () => {
 
   async function loadPermissions() {
     const accessToken = localStorage.getItem('access_token');
-    const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/role/permissions/list', {
+    const response = await fetch('http://localhost:3001/role/permissions/list', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -94,7 +94,7 @@ const CreateRole = () => {
 
     try {
       const accessToken = localStorage.getItem('access_token');
-      const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/role', {
+      const response = await fetch('http://localhost:3001/role', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -131,7 +131,7 @@ const CreateRole = () => {
     try {
       const accessToken = localStorage.getItem('access_token');
       sigla = params?.replace('/create-role/', '') ? params.replace('/create-role/', '') : null;
-      const response = await fetch(`https://8351-177-184-217-182.ngrok-free.app/role/${sigla}`, {
+      const response = await fetch(`http://localhost:3001/role/${sigla}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

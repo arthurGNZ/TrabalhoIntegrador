@@ -20,7 +20,7 @@ const ListCompanies = () => {
 async function loadCompanies() {
     try {
       const accessToken = localStorage.getItem('access_token');
-      const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/business', {
+      const response = await fetch('http://localhost:3001/business', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ async function loadCompanies() {
     if (confirmed) {
       try {
         const accessToken = localStorage.getItem('access_token');
-        const response = await fetch(`https://8351-177-184-217-182.ngrok-free.app/business/${companyCNPJ}`, {
+        const response = await fetch(`http://localhost:3001/business/${companyCNPJ}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ async function loadCompanies() {
   const router = useRouter();
   async function verifyToken() {
     const accessToken = localStorage.getItem('access_token');
-    const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/auth/validate-token', {
+    const response = await fetch('http://localhost:3001/auth/validate-token', {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`,

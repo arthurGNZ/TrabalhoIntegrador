@@ -21,3 +21,61 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Atualizações para o globals.css */
+
+/* Animações de página para toda a aplicação */
+body {
+  transition: opacity 0.3s ease;
+  opacity: 0;
+  /* Remover qualquer configuração que possa interferir no scroll */
+  overflow-y: auto !important; /* Forçar o scroll sempre que necessário */
+}
+
+html {
+  overflow-y: auto !important; /* Garantir que o scroll funcione também no html */
+}
+
+body.loaded {
+  opacity: 1;
+}
+
+body.unloading {
+  opacity: 0;
+}
+
+/* Modificar para não afetar o scroll */
+.navigating {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Estilos para botões de link no login */
+.forgot-link, .back-link {
+  background: none;
+  border: none;
+  color: #0056b3;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  margin: 0;
+  display: inline-block;
+  transition: color 0.2s;
+}
+
+.forgot-link:hover, .back-link:hover {
+  color: #003d82;
+}
+
+.forgot-link:disabled, .back-link:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Classe para garantir que o scroll esteja habilitado */
+.scroll-enabled {
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 50vh;
+}

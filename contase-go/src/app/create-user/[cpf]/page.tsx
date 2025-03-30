@@ -49,7 +49,7 @@ const CreateUser = () => {
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   async function verifyToken() {
     const accessToken = localStorage.getItem('access_token');
-    const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/auth/validate-token', {
+    const response = await fetch('http://localhost:3001/auth/validate-token', {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`,
@@ -152,7 +152,7 @@ const CreateUser = () => {
 
     if (userCpf && userCpf !== 'new') {
       try {
-        const response = await fetch(`https://8351-177-184-217-182.ngrok-free.app/person/${userCpf}`, {
+        const response = await fetch(`http://localhost:3001/person/${userCpf}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -201,7 +201,7 @@ const CreateUser = () => {
     const accessToken = localStorage.getItem('access_token');
     try {
       const [companyResponse, roleResponse] = await Promise.all([
-        fetch('https://8351-177-184-217-182.ngrok-free.app/business/short', {
+        fetch('http://localhost:3001/business/short', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -209,7 +209,7 @@ const CreateUser = () => {
             'ngrok-skip-browser-warning': 'true'
           },
         }),
-        fetch('https://8351-177-184-217-182.ngrok-free.app/role', {
+        fetch('http://localhost:3001/role', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -248,7 +248,7 @@ const CreateUser = () => {
     setIsLoading(true);
     try {
       const accessToken = localStorage.getItem('access_token');
-      const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/person/', {
+      const response = await fetch('http://localhost:3001/person/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -287,7 +287,7 @@ const CreateUser = () => {
 
     try {
       const accessToken = localStorage.getItem('access_token');
-      const response = await fetch(`https://8351-177-184-217-182.ngrok-free.app/person/${userCpf}`, {
+      const response = await fetch(`http://localhost:3001/person/${userCpf}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

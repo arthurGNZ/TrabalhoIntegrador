@@ -20,7 +20,7 @@ export default function Home() {
   
   async function verifyToken() {
     const accessToken = localStorage.getItem('access_token');
-    const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/auth/validate-token', {
+    const response = await fetch('http://localhost:3001/auth/validate-token', {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`,
@@ -85,7 +85,7 @@ export default function Home() {
     companyCnpj = params?.replace('/create-company/', '') ? params.replace('/create-company/', '') : null;
     if(companyCnpj && companyCnpj !== 'new'){
       try {
-        const response = await fetch(`https://8351-177-184-217-182.ngrok-free.app/business/${companyCnpj}`, {
+        const response = await fetch(`http://localhost:3001/business/${companyCnpj}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -125,7 +125,7 @@ export default function Home() {
 
     try {
       const accessToken = localStorage.getItem('access_token');
-      const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/business', {
+      const response = await fetch('http://localhost:3001/business', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -154,7 +154,7 @@ export default function Home() {
     companyCnpj = params?.replace('/create-company/', '') ? params.replace('/create-company/', '') : null;
     try {
       const accessToken = localStorage.getItem('access_token');
-      const response = await fetch(`https://8351-177-184-217-182.ngrok-free.app/business/${companyCnpj}`, {
+      const response = await fetch(`http://localhost:3001/business/${companyCnpj}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -40,7 +40,7 @@ const DashboardData = () => {
   async function loadInfo() {
     try {
       const accessToken = localStorage.getItem('access_token');
-      const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/dashboard/departamento-pessoal', {
+      const response = await fetch('http://localhost:3001/dashboard/departamento-pessoal', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

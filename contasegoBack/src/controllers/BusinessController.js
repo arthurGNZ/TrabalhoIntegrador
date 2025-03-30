@@ -1,4 +1,4 @@
-const businessService = require('../services/businessService');
+const businessService = require('../services/BusinessService');
 
 class BusinessController {
   async create(req, res) {
