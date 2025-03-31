@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Header } from "../components/header";
-import { DollarSign, TrendingUp } from 'lucide-react';
+import { DollarSign, TrendingUp, FileDown } from 'lucide-react';
 import {
   LineChart,
   Line,
@@ -39,6 +39,7 @@ interface ChartData {
 const DashboardFiscal = () => {
   const [data, setData] = useState<ChartData[] | null>(null);
   const [totals, setTotals] = useState<ApiResponse['totals'] | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const formatCurrency = (value: number | string): string => {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
@@ -82,13 +83,83 @@ const DashboardFiscal = () => {
     fetchData();
   }, []);
 
+  const downloadPDF = async () => {
+    try {
+      setIsDownloading(true);
+      const accessToken = localStorage.getItem("access_token");
+      
+      const response = await fetch(
+        "http://localhost:3001/dashboard/departamento-fiscal/pdf",
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "ngrok-skip-browser-warning": "true",
+          },
+        }
+      );
+
+      if (response.ok) {
+        // Obter o nome do arquivo do cabeçalho Content-Disposition, se disponível
+        const contentDisposition = response.headers.get('Content-Disposition');
+        let filename = 'relatorio-fiscal.pdf';
+        
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+          if (filenameMatch && filenameMatch[1]) {
+            filename = filenameMatch[1].replace(/['"]/g, '');
+          }
+        }
+
+        // Converter resposta para blob
+        const blob = await response.blob();
+        
+        // Criar URL para o blob
+        const url = window.URL.createObjectURL(blob);
+        
+        // Criar um elemento de link para download
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = filename;
+        
+        // Adicionar à página, clicar e remover
+        document.body.appendChild(a);
+        a.click();
+        
+        // Limpar após download
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } else {
+        console.error("Erro ao baixar PDF:", response.statusText);
+        alert("Não foi possível baixar o relatório. Por favor, tente novamente.");
+      }
+    } catch (error) {
+      console.error("Erro ao baixar PDF:", error);
+      alert("Erro ao fazer download do relatório.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return (
     <>
       <Header />
       <div className="dashboard-container">
         <div className="dashboard-content">
           <div className="chart-header">
-            <h1>Dashboard Fiscal</h1>
+            <div className="flex justify-between items-center w-full">
+              <h1>Dashboard Fiscal</h1>
+              <button
+                onClick={downloadPDF}
+                disabled={isDownloading || !data}
+                className={`flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-medium py-2 px-4 rounded-lg shadow transition-all duration-200 ${
+                  isDownloading || !data ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg transform hover:scale-105'
+                }`}
+              >
+                <FileDown size={18} />
+                {isDownloading ? 'Baixando...' : 'Baixar Relatório PDF'}
+              </button>
+            </div>
             
             {totals && (
               <div className="w-full mb-6">

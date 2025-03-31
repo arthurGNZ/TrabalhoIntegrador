@@ -12,13 +12,13 @@ type DPInfo = {
 };
 
 const DashboardData = () => {
-  const[info, setInfo] = useState<DPInfo[]>([]);
+  const [info, setInfo] = useState<DPInfo | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  
   async function verifyToken() {
-    
-
     const accessToken = localStorage.getItem('access_token');
-    const response = await fetch('https:8351-177-184-217-182.ngrok-free.app/auth/validate-token', {
+    const response = await fetch('http://localhost:3001/auth/validate-token', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`,
@@ -33,12 +33,14 @@ const DashboardData = () => {
       }
     }
   }
+  
   useEffect(() => {
     verifyToken();
   }, []);
 
   async function loadInfo() {
     try {
+      setIsLoading(true);
       const accessToken = localStorage.getItem('access_token');
       const response = await fetch('http://localhost:3001/dashboard/departamento-pessoal', {
         method: 'GET',
@@ -57,6 +59,8 @@ const DashboardData = () => {
       }
     } catch (error) {
       console.log('Erro ao carregar informação da empresa');
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -64,22 +68,58 @@ const DashboardData = () => {
     loadInfo();
   }, []);
 
-  const [data, setData] = useState({
-    total_funcionarios: 0,
-    total_folha: 0,
-    aliquota: 0,
-    anexo: 0
-  });
+  const downloadPDF = async () => {
+    try {
+      setIsLoading(true);
+      const accessToken = localStorage.getItem('access_token');
+      
+      // Fetch the PDF as a blob
+      const response = await fetch('http://localhost:3001/dashboard/departamento-pessoal/pdf', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Falha ao baixar o relatório');
+      }
+      
+      // Convert the response to a blob
+      const blob = await response.blob();
+      
+      // Create a URL for the blob
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create a temporary anchor element to download the file
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = 'Relatório_Departamento_Pessoal.pdf';
+      
+      // Append to the document body, click the link, and remove it
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Erro ao baixar o PDF:', error);
+      alert('Não foi possível baixar o relatório. Tente novamente mais tarde.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  useEffect(() => {
-    const fetchedData = {
-      total_funcionarios: 3,
-      total_folha: 152587.51,
-      aliquota: 0.5799999833106995,
-      anexo: 2
-    };
-    setData(fetchedData);
-  }, []);
+  // Fallback data for development/preview
+  const data = info || {
+    total_funcionarios: 3,
+    total_folha: 152587.51,
+    aliquota: 0.5799999833106995,
+    anexo: 2
+  };
 
   return (
     <div className="page">
@@ -103,6 +143,15 @@ const DashboardData = () => {
             <div className="infoItem">
               <strong>Anexo:</strong> {data.anexo}
             </div>
+          </div>
+          <div className="download-button-container">
+            <button 
+              className="download-button" 
+              onClick={downloadPDF}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Gerando relatório...' : 'Baixar Relatório PDF'}
+            </button>
           </div>
         </div>
       </div>

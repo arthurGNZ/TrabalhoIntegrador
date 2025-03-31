@@ -110,8 +110,8 @@ const LandingPage = () => {
             <div className="service-icon">
               <FaShieldAlt size={36} />
             </div>
-            <h3>Seguros</h3>
-            <p>Proteção completa para seu patrimônio pessoal e empresarial.</p>
+            <h3>Planejamento Tributário</h3>
+            <p>Planejamento Tributário e serviços de Recuperação Tributária.</p>
             <Link href="#" className="service-link">Saiba mais →</Link>
           </div>
           
@@ -428,8 +428,8 @@ const LandingPage = () => {
           </div>
         </div>
         
-        <div className="footer-bottom">
-          <p>&copy; {new Date().getFullYear()} ContaSeg Contabilidade. Todos os direitos reservados.</p>
+     <div className="footer-bottom">
+          <p>&copy; {new Date().getFullYear()} Arthur Grasnievcz, Gabriel Gois e Paula. Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>

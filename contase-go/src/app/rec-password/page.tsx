@@ -37,7 +37,7 @@ const recPass = () => {
         };
         
         try {
-            const response = await fetch('https://8351-177-184-217-182.ngrok-free.app/auth/lost-password', {
+            const response = await fetch('http://localhost:3001/auth/lost-password', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

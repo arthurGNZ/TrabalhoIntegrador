@@ -17,4 +17,18 @@ router.get(
  DashboardController.getFiscalData
 );
 
+router.get(
+ '/departamento-fiscal/pdf',
+ authMiddleware,
+ permissionsGuard('DF'),
+ DashboardController.generateFiscalPDF
+);
+
+router.get(
+ '/departamento-pessoal/pdf',
+ authMiddleware,
+ permissionsGuard('DP'),
+ DashboardController.generateDepartmentPDF
+);
+
 module.exports = router;

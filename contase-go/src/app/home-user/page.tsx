@@ -1,10 +1,59 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import './style.css';
+import './home-user.css';
 import { Header } from '../components/header';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
+
+// Componente que redefine o CSS
+const CSSReset = () => {
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.id = 'user-reset-styles';
+    style.innerHTML = `
+      body, html {
+        margin: 0;
+        padding: 0;
+        font-family: 'Montserrat', sans-serif;
+        background: linear-gradient(135deg, #e6f0ff, #f0f7ff);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      
+      * {
+        animation: none !important;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+      }
+      
+      *[class^="login-"], *[class^="admin-"] {
+        all: initial !important;
+      }
+    `;
+    
+    const oldStyle = document.getElementById('user-reset-styles');
+    if (oldStyle) {
+      oldStyle.remove();
+    }
+    
+    document.head.appendChild(style);
+    document.body.className = '';
+    document.body.classList.add('user-body');
+    
+    return () => {
+      if (document.getElementById('user-reset-styles')) {
+        const styleElement = document.getElementById('user-reset-styles');
+        if (styleElement) {
+          styleElement.remove();
+        }
+      }
+      document.body.classList.remove('user-body');
+    };
+  }, []);
+  
+  return null;
+};
+
 type Company = {
   cnpj: string;
   razao_social: string;
@@ -35,6 +84,7 @@ const HomeUser = () => {
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isChangingCompany, setIsChangingCompany] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   const router = useRouter();
 
@@ -95,6 +145,9 @@ const HomeUser = () => {
       console.log('Erro na requisição:', error);
     } finally {
       setIsInitialLoading(false);
+      setTimeout(() => {
+        setLoaded(true);
+      }, 100);
     }
   }
 
@@ -161,20 +214,26 @@ const HomeUser = () => {
   };
 
   if (isInitialLoading) {
-    return <div>Carregando...</div>;
+    return (
+      <div className="user-loading">
+        <div className="user-loading-spinner"></div>
+        <p>Carregando...</p>
+      </div>
+    );
   }
 
   return (
-    <div className="page">
+    <>
+      <CSSReset />
       <Header />
-      <div className="container-home">
-        <div className="infoBanner">
-          <p>Você está visualizando as informações da empresa:</p>
+      <div className="user-panel">
+        <div className="user-panel-heading">
+          <h1>Área do Usuário</h1>
         </div>
-        <div className="selectionBox">
-          <h3>Selecione a empresa:</h3>
+        
+        <div className="user-company-selector">
           <select
-            className="companySelect"
+            className="user-select"
             value={selectedCompany}
             onChange={handleCompanyChange}
             disabled={isChangingCompany}
@@ -185,32 +244,72 @@ const HomeUser = () => {
               </option>
             ))}
           </select>
-          <h3>Deseja ver as estatísticas de:</h3>
-          <div className="buttons">
-            {isChangingCompany ? (
-              <div>Atualizando permissões...</div>
-            ) : (
-              permissions.length > 0 && (
-                <>
-                  {(permissions.some(permission => permission.sigla === 'ADM') || 
-                    permissions.some(permission => permission.sigla === 'DF')) && (
-                    <Link href="/dashboard-financeiro" className="button">
-                      Departamento Fiscal
-                    </Link>
-                  )}
-                  {(permissions.some(permission => permission.sigla === 'ADM') || 
-                    permissions.some(permission => permission.sigla === 'DP')) && (
-                    <Link href="/dashboard-pessoal" className="button">
-                      Departamento Pessoal
-                    </Link>
-                  )}
-                </>
-              )
-            )}
-          </div>
+          {isChangingCompany && <div className="user-select-loader"></div>}
+        </div>
+        
+        <div className="user-panel-cards">
+          {permissions.length > 0 ? (
+            <>
+              {(permissions.some(permission => permission.sigla === 'ADM') || 
+               permissions.some(permission => permission.sigla === 'DF')) && (
+                <div 
+                  className={`user-panel-card ${loaded ? 'user-panel-card-visible' : ''}`}
+                  onClick={() => router.push('/dashboard-financeiro')}
+                >
+                  <div className="user-panel-card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="12" y1="20" x2="12" y2="10"></line>
+                      <line x1="18" y1="20" x2="18" y2="4"></line>
+                      <line x1="6" y1="20" x2="6" y2="16"></line>
+                      <path d="M2 20h20"></path>
+                    </svg>
+                  </div>
+                  <h2 className="user-panel-card-title">Departamento Fiscal</h2>
+                  <div className="user-panel-card-arrow">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12h14M12 5l7 7-7 7"></path>
+                    </svg>
+                  </div>
+                </div>
+              )}
+              
+              {(permissions.some(permission => permission.sigla === 'ADM') || 
+               permissions.some(permission => permission.sigla === 'DP')) && (
+                <div 
+                  className={`user-panel-card ${loaded ? 'user-panel-card-visible' : ''}`}
+                  onClick={() => router.push('/dashboard-pessoal')}
+                  style={{ animationDelay: '0.1s' }}
+                >
+                  <div className="user-panel-card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="9" cy="7" r="4"></circle>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                  </div>
+                  <h2 className="user-panel-card-title">Departamento Pessoal</h2>
+                  <div className="user-panel-card-arrow">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12h14M12 5l7 7-7 7"></path>
+                    </svg>
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="user-panel-message">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <p>Você não possui permissões para acessar módulos nesta empresa.</p>
+            </div>
+          )}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
